@@ -14,10 +14,10 @@
     "dialect": "postgres"
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "sweethome",
-    "host": "127.0.0.1",
+    "username": "POSTGRES_USER",
+    "password": "POSTGRES_PASSWORD",
+    "database": "POSTGRES_DATABASE",
+    "host": "POSTGRES_HOST",
     "dialect": "postgres"
   }
 }
