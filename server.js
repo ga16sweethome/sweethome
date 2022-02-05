@@ -9,6 +9,11 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 
+app.get("/",async(req,res)=>{
+  res.status(200).json({
+    status : "SELAMAT DATANG"
+  })
+})
 app.use("/api/v1", router)
 
 app.listen(port, console.log(`localhost:${port}`))
