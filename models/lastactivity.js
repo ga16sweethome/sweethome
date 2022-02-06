@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   LastActivity.init(
     {
       userId: DataTypes.INTEGER,
+      submmitted : DataTypes.DATE,
       time_login: DataTypes.DATE,
     },
     {

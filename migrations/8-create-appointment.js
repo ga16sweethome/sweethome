@@ -9,7 +9,8 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       code: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true
       },
       userId: {
         type: Sequelize.INTEGER
@@ -17,7 +18,7 @@ module.exports = {
       buildingTypeId: {
         type: Sequelize.INTEGER
       },
-      servideTypeId: {
+      serviceTypeId: {
         type: Sequelize.INTEGER
       },
       estimateTime: {
@@ -33,7 +34,7 @@ module.exports = {
         type: Sequelize.TEXT
       },
       appointmentDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATEONLY
       },
       timeslotId: {
         type: Sequelize.INTEGER

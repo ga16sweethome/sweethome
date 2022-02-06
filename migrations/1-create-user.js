@@ -22,10 +22,11 @@ module.exports = {
         type: Sequelize.STRING
       },
       is_admin: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaulValue : false
       },
       picture: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       phone: {
         type: Sequelize.STRING

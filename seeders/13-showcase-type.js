@@ -3,27 +3,26 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert(
-      'ServiceTypes', 
+      'ShowcaseTypes', 
       [{
-         name : "Renovation",
-         createdAt : new Date(),
-         updatedAt : new Date()
+        type : "Completed Project",
+        createdAt : new Date(),
+        updatedAt : new Date()
        },
        {
-        name : "Interior Design",
+        type : "Portfolio",
         createdAt : new Date(),
         updatedAt : new Date()
-      },
-      {
-        name : "Building Inspection",
-        createdAt : new Date(),
-        updatedAt : new Date()
-      },    
+       },
+       
+       
+      
+      
+           
      ], 
      {});
    
  }, 
-
 
   async down (queryInterface, Sequelize) {
     /**

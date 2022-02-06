@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Showcase.init(
     {
-      code: DataTypes.STRING,
+      name: DataTypes.STRING,
       projectId: DataTypes.INTEGER,
       showcaseTypeId: DataTypes.INTEGER,
       createdBy: DataTypes.INTEGER,

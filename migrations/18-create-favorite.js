@@ -9,7 +9,14 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       userId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull :false,
+        references : {
+          model : "Users",  //mengikuti model migrations name
+          key : "id"
+        },
+        onDelete : "CASCADE",
+        onUpdate : "CASCADE"
       },
       showcaseId: {
         type: Sequelize.INTEGER

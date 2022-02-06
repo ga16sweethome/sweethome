@@ -9,7 +9,14 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       showcaseId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull :false,
+        references : {
+          model : "Showcases",  //mengikuti model migrations name
+          key : "id"
+        },
+        onDelete : "CASCADE",
+        onUpdate : "CASCADE"
       },
       styleId: {
         type: Sequelize.INTEGER

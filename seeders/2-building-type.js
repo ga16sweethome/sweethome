@@ -3,52 +3,31 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert(
-      'Sections', 
+      'BuildingTypes', 
       [{
-         name : "Living room",
+         name : "House",
          createdAt : new Date(),
          updatedAt : new Date()
        },
        {
-        name : "Dining Room",
+        name : "Apartment",
         createdAt : new Date(),
         updatedAt : new Date()
       },
       {
-        name : "Bedroom",
+        name : "SOHO",
         createdAt : new Date(),
         updatedAt : new Date()
       },
       {
-        name : "Kitchen",
+        name : "Office",
         createdAt : new Date(),
         updatedAt : new Date()
-      }, 
-      {
-        name : "Bathroom",
-        createdAt : new Date(),
-        updatedAt : new Date()
-      },
-      {
-       name : "Study",
-       createdAt : new Date(),
-       updatedAt : new Date()
-     },
-     {
-       name : "Office",
-       createdAt : new Date(),
-       updatedAt : new Date()
-     },
-     {
-       name : "Outdoor",
-       createdAt : new Date(),
-       updatedAt : new Date()
-     },     
+      },     
      ], 
      {});
    
  }, 
-
 
   async down (queryInterface, Sequelize) {
     /**

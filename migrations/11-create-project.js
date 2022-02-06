@@ -9,7 +9,8 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       code: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique : true
       },
       appointmentId: {
         type: Sequelize.INTEGER
