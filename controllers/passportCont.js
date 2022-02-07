@@ -1,7 +1,8 @@
 const joi = require("joi");
-const {User, Profile} = require("../models");
-const {hashPassword, comparePassword} = require("../helpers/bcrypt");
+const {User} = require("../models");
+// const {hashPassword, comparePassword} = require("../helpers/bcrypt");
 const {generateToken} = require("../helpers/jwt");
+const passport = require("passport")
 
 module.exports = {
 googleCallback : async (req,res) => {
@@ -19,7 +20,7 @@ googleCallback : async (req,res) => {
         id: profile.id,
         email: profile.email,
       });
-      res.redirect("/api/v1/home" + token) //redirect tinggal di ubah mau ke api yg mana? disini ke halaman events
+      res.redirect("/api/v1/" + token) //fe yang ngurus mau redirect kemana
     } catch (error) {
       
       errorHandler (res,error)

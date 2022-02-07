@@ -4,9 +4,9 @@ const passport = require('passport')
 
 
 passport.use(new GoogleStrategy({
-    clientID: GOOGLE_CLIENT_ID,
-    clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://www.example.com/auth/google/callback"
+    clientID: "155031898561-jovck60ogljfk0venctel4bndt3pov7p.apps.googleusercontent.com",
+    clientSecret: "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",
+    callbackURL: "http://localhost:3000/auth/google/callback"
   },
   function(accessToken, refreshToken, profile, cb) {
     User.findOrCreate({ googleId: profile.id }, function (err, user) {
@@ -16,8 +16,8 @@ passport.use(new GoogleStrategy({
 ));
 
 passport.use(new FacebookStrategy({
-    clientID: FACEBOOK_APP_ID,
-    clientSecret: FACEBOOK_APP_SECRET,
+    clientID: "909484406435930",
+    clientSecret: "efe5b8e6df5b71e518be13cb73e855ca",
     callbackURL: "http://localhost:3000/auth/facebook/callback"
   },
   function(accessToken, refreshToken, profile, cb) {
@@ -26,3 +26,5 @@ passport.use(new FacebookStrategy({
     });
   }
 ));
+
+module.exports = passport
