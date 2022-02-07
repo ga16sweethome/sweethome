@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         as: "appointment",
       });
       AppointmentJunkStyle.belongsTo(models.Style, {
-        foreignkey: "styleId",
+        foreignKey: "styleId",
         as: "style",
       });
     }
