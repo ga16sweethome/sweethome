@@ -37,6 +37,7 @@ module.exports = {
 
             req.user = {
                 id: user.id,
+                name: `${user.firstName} ${user.lastName}`,
                 email: user.email,
         };
             next();
