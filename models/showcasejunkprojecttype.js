@@ -10,11 +10,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       ShowcaseJunkProjectType.belongsTo(models.Showcase, {
-        foreignkey: "showcaseId",
+        foreignKey: "showcaseId",
         as: "showcase",
       });
       ShowcaseJunkProjectType.belongsTo(models.ProjectType, {
-        foreignkey: "projectTypeId",
+        foreignKey: "projectTypeId",
         as: "projectType",
       });
     }

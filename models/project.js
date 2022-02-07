@@ -13,14 +13,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "appointmentId",
         as: "appointment",
       });
-      // Project.belongsTo(models.User, {
-      //   foreignkey: "userId",
-      //   as: "user",
-      // });
-      // Project.hasMany(models.ProjectDetail, {
-      //   foreignkey: "projectId",
-      //   as: "projectDetail",
-      // });
+      Project.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "user",
+      });
+      Project.hasMany(models.ProjectDetail, {
+        foreignKey: "projectId",
+        as: "projectDetail",
+      });
       Project.hasMany(models.Showcase, {
         foreignKey: "projectId",
         as: "showcase",

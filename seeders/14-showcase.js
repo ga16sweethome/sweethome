@@ -6,7 +6,7 @@ module.exports = {
       'Showcases', 
       [{
         projectId : 1,
-        ShowcaseTypeId : 1,
+        showcaseTypeId : 1,
         createdBy : 1,
         is_shown : true,
         name : "Apartemen Living Room Redesign",
@@ -14,7 +14,7 @@ module.exports = {
         updatedAt : new Date()
        },
        {
-        ShowcaseTypeId : 2,
+        showcaseTypeId : 2,
         createdBy : 1,
         is_shown : false,
         name : "Apartemen Living Room Redesign",
@@ -22,7 +22,7 @@ module.exports = {
         updatedAt : new Date()
        },
        {
-        ShowcaseTypeId : 2,
+        showcaseTypeId : 2,
         createdBy : 1,
         is_shown : true,
         name : "Natural Feel Living Room",
@@ -30,7 +30,7 @@ module.exports = {
         updatedAt : new Date()
        },
        {
-        ShowcaseTypeId : 2,
+        showcaseTypeId : 2,
         createdBy : 1,
         is_shown : true,
         name : "Natural Feel Living Room",
@@ -38,7 +38,7 @@ module.exports = {
         updatedAt : new Date()
        },
        {
-        ShowcaseTypeId : 2,
+        showcaseTypeId : 2,
         createdBy : 1,
         is_shown : true,
         name : "Natural Feel Living Room",
@@ -46,7 +46,7 @@ module.exports = {
         updatedAt : new Date()
        },
        {
-        ShowcaseTypeId : 2,
+        showcaseTypeId : 2,
         createdBy : 1,
         is_shown : true,
         name : "Natural Feel Living Room",
@@ -54,7 +54,7 @@ module.exports = {
         updatedAt : new Date()
        },
        {
-        ShowcaseTypeId : 2,
+        showcaseTypeId : 2,
         createdBy : 2,
         is_shown : true,
         name : "Japenese Traditional Living Room",
@@ -62,7 +62,7 @@ module.exports = {
         updatedAt : new Date()
        },
        {
-        ShowcaseTypeId : 2,
+        showcaseTypeId : 2,
         createdBy : 2,
         is_shown : true,
         name : "Japenese Traditional Living Room",
@@ -70,7 +70,7 @@ module.exports = {
         updatedAt : new Date()
        },
        {
-        ShowcaseTypeId : 2,
+        showcaseTypeId : 2,
         createdBy : 1,
         is_shown : true,
         name : "Japenese Traditional Living Room",
@@ -78,7 +78,7 @@ module.exports = {
         updatedAt : new Date()
        },
        {
-        ShowcaseTypeId : 2,
+        showcaseTypeId : 2,
         createdBy : 2,
         is_shown : true,
         name : "Japenese Traditional Living Room",

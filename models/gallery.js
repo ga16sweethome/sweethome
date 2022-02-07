@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Gallery.belongsTo(models.Showcase, {
-        foreignkey: "showcaseId",
+        foreignKey: "showcaseId",
         as: "showcase",
       });
     }

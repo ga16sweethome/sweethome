@@ -14,25 +14,25 @@ module.exports = (sequelize, DataTypes) => {
         as: "project",
       });
       Showcase.belongsTo(models.ShowcaseType, {
-        foreignKey: "ShowcaseTypeId",
-        as: "ShowcaseType",
+        foreignKey: "showcaseTypeId",
+        as: "showcaseType",
       });
-      // Showcase.hasMany(models.ShowcaseJunkProjectType, {
-      //   foreignkey: "showcaseId",
-      //   as: "showcaseJunkProjectType",
-      // });
-      // Showcase.hasMany(models.ShowcaseJunkStyle, {
-      //   foreignkey: "showcaseId",
-      //   as: "showcaseJunkstyle",
-      // });
-      // Showcase.hasMany(models.Favorite, {
-      //   foreignkey: "showcaseId",
-      //   as: "favorite",
-      // });
-      // Showcase.hasMany(models.Gallery, {
-      //   foreignkey: "showcaseId",
-      //   as: "gallery",
-      // });
+      Showcase.hasMany(models.ShowcaseJunkProjectType, {
+        foreignKey: "showcaseId",
+        as: "showcaseJunkProjectType",
+      });
+      Showcase.hasMany(models.ShowcaseJunkStyle, {
+        foreignKey: "showcaseId",
+        as: "showcaseJunkstyle",
+      });
+      Showcase.hasMany(models.Favorite, {
+        foreignKey: "showcaseId",
+        as: "favorite",
+      });
+      Showcase.hasMany(models.Gallery, {
+        foreignKey: "showcaseId",
+        as: "gallery",
+      });
     }
   }
   Showcase.init(

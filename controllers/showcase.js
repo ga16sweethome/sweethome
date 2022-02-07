@@ -7,6 +7,7 @@ module.exports = {
         const {id} = req.params
         try {
             //const data = req.user // DARI TOKEN
+           
             const data = await Showcase.findAll ({
                 where : {
                     id : id
@@ -15,7 +16,7 @@ module.exports = {
                 include : [
                   {
                     model : ShowcaseType,
-                    as : "ShowcaseType",
+                    as : "showcaseType",
                     attributes : {
                       exclude : ["id","createdAt","updatedAt"]  
                     }
@@ -33,7 +34,7 @@ module.exports = {
                 // }
              })
             
-            res.status(200).json(data)
+            res.status(200).json({data})
         } catch (error) {
             errorHandler(res, error)
         }
