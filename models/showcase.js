@@ -10,29 +10,29 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Showcase.belongsTo(models.Project, {
-        foreignkey: "projectId",
+        foreignKey :  "projectId",    
         as: "project",
       });
       Showcase.belongsTo(models.ShowcaseType, {
-        foreignkey: "showcaseTypeId",
-        as: "showcaseType",
+        foreignKey: "ShowcaseTypeId",
+        as: "ShowcaseType",
       });
-      Showcase.hasMany(models.ShowcaseJunkProjectType, {
-        foreignkey: "showcaseId",
-        as: "showcaseJunkProjectType",
-      });
-      Showcase.hasMany(models.ShowcaseJunkStyle, {
-        foreignkey: "showcaseId",
-        as: "showcaseJunkstyle",
-      });
-      Showcase.hasMany(models.Favorite, {
-        foreignkey: "showcaseId",
-        as: "favorite",
-      });
-      Showcase.hasMany(models.Gallery, {
-        foreignkey: "showcaseId",
-        as: "gallery",
-      });
+      // Showcase.hasMany(models.ShowcaseJunkProjectType, {
+      //   foreignkey: "showcaseId",
+      //   as: "showcaseJunkProjectType",
+      // });
+      // Showcase.hasMany(models.ShowcaseJunkStyle, {
+      //   foreignkey: "showcaseId",
+      //   as: "showcaseJunkstyle",
+      // });
+      // Showcase.hasMany(models.Favorite, {
+      //   foreignkey: "showcaseId",
+      //   as: "favorite",
+      // });
+      // Showcase.hasMany(models.Gallery, {
+      //   foreignkey: "showcaseId",
+      //   as: "gallery",
+      // });
     }
   }
   Showcase.init(

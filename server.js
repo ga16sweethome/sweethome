@@ -14,6 +14,9 @@ app.get("/",async(req,res)=>{
     status : "SELAMAT DATANG"
   })
 })
+
+
+
 app.use("/api/v1", router)
 
 app.listen(port, console.log(`localhost:${port}`))
