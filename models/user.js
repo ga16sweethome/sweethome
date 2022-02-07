@@ -10,19 +10,19 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       User.hasMany(models.Appointment, {
-        foreignkey: "userId",
+        foreignKey: "userId",
         as: "appointment",
       });
       User.hasMany(models.Project, {
-        foreignkey: "userId",
+        foreignKey: "userId",
         as: "project",
       });
       User.hasMany(models.Favorite, {
-        foreignkey: "userId",
+        foreignKey: "userId",
         as: "favorite",
       });
       User.hasOne(models.LastActivity, {
-        foreignkey: "userId",
+        foreignKey: "userId",
         as: "lastActivity",
       });
     }

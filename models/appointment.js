@@ -10,31 +10,32 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Appointment.belongsTo(models.User, {
-        foreignkey: "userId",
+        foreignKey: "userId",
         as: "user",
       });
       Appointment.belongsTo(models.BuildingType, {
+        foreignKey: "buildingTypeId",
         as: "buildingType",
         foreignkey: "buildingTypeId",
       });
       Appointment.belongsTo(models.ServiceType, {
-        foreignkey: "serviceTypeId",
+        foreignKey: "serviceTypeId",
         as: "serviceType",
       });
       Appointment.belongsTo(models.Timeslot, {
-        foreignkey: "timeslotId",
+        foreignKey: "timeslotId",
         as: "timeslot",
       });
       Appointment.hasMany(models.AppointmentJunkSection, {
-        foreignkey: "appointmentId",
+        foreignKey: "appointmentId",
         as: "appointmentJunkSection",
       });
       Appointment.hasMany(models.AppointmentJunkStyle, {
-        foreignkey: "appointmentId",
+        foreignKey: "appointmentId",
         as: "appointmentJunkStyle",
       });
       Appointment.hasMany(models.Project, {
-        foreignkey: "appointmentId",
+        foreignKey: "appointmentId",
         as: "project",
       });
     }

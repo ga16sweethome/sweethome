@@ -10,11 +10,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       ShowcaseJunkStyle.belongsTo(models.Showcase, {
-        foreignkey: "showcaseId",
+        foreignKey: "showcaseId",
         as: "showcase",
       });
       ShowcaseJunkStyle.belongsTo(models.Style, {
-        foreignkey: "styleId",
+        foreignKey: "styleId",
         as: "style",
       });
     }

@@ -10,11 +10,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Section.hasMany(models.AppointmentJunkSection, {
-        foreignkey: "sectionId",
+        foreignKey: "sectionId",
         as: "appointmentJunkSection",
       });
       Section.hasMany(models.ProjectDetail, {
-        foreignkey: "sectionId",
+        foreignKey: "sectionId",
         as: "projectDetail",
       });
     }

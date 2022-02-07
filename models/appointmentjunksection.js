@@ -10,11 +10,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       AppointmentJunkSection.belongsTo(models.Appointment, {
-        foreignkey: "appointmentId",
+        foreignKey: "appointmentId",
         as: "appointment",
       });
       AppointmentJunkSection.belongsTo(models.Section, {
-        foreignkey: "sectionId",
+        foreignKey: "sectionId",
         as: "section",
       });
     }

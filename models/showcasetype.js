@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       ShowcaseType.hasMany(models.Showcase, {
-        foreignkey: "showcaseTypeId",
+        foreignKey: "showcaseTypeId",
         as: "showcase",
       });
     }

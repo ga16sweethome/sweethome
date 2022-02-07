@@ -8,9 +8,7 @@ module.exports = {
         return token;
     },
     verifyToken: (token) => {
-        const verify = jwt.verify(token, process.env.JWT_KEY, {
-            expiresIn: "5 hours"
-        })
+        const verify = jwt.verify(token, process.env.JWT_KEY)
         return verify
     }
 }

@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       LastActivity.belongsTo(models.User, {
-        foreignkey: "userId",
+        foreignKey: "userId",
         as: "user",
       });
     }
