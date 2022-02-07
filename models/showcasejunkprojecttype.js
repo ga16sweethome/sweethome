@@ -9,11 +9,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      ShowcaseJunkProjectType.belongsToMany(models.Showcase, {
+      ShowcaseJunkProjectType.belongsTo(models.Showcase, {
         foreignkey: "showcaseId",
         as: "showcase",
       });
-      ShowcaseJunkProjectType.belongsToMany(models.ProjectType, {
+      ShowcaseJunkProjectType.belongsTo(models.ProjectType, {
         foreignkey: "projectTypeId",
         as: "projectType",
       });

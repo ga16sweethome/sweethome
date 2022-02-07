@@ -9,12 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Favorite.belongsToMany(models.User, {
-        foreignkey: "userId",
+      Favorite.belongsTo(models.User, {
+        foreignKey: "userId",
         as: "user",
       });
-      Favorite.belongsToMany(models.Showcase, {
-        foreignkey: "showcaseId",
+      Favorite.belongsTo(models.Showcase, {
+        foreignKey: "showcaseId",
         as: "showcase",
       });
     }

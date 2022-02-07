@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Showcases', {
@@ -15,7 +16,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       showcaseTypeId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       createdBy: {
         type: Sequelize.INTEGER
