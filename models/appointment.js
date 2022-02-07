@@ -14,12 +14,12 @@ module.exports = (sequelize, DataTypes) => {
         as: "user",
       });
       Appointment.belongsTo(models.BuildingType, {
-        foreignkey: "buildingTypeId",
         as: "buildingType",
+        foreignkey: "buildingTypeId",
       });
       Appointment.belongsTo(models.ServiceType, {
-        foreignkey: "servideTypeId",
-        as: "servideType",
+        foreignkey: "serviceTypeId",
+        as: "serviceType",
       });
       Appointment.belongsTo(models.Timeslot, {
         foreignkey: "timeslotId",
