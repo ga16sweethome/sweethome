@@ -16,21 +16,33 @@ module.exports = {
 
         } catch (error) {
             errorHandler(res, error)
+            return res.status(500).json({
+                status: "Internal Server Error",
+                message: error.message,
+                result: {},
+            });
+            
         }
     },
+
+
 
     register: async (req, res) => {
         
         try {
+
+            console.log(req.body)
             const data = await User.create({
                 firstName: req.body.firstName,
                 lastName: req.body.lastName,
-                email:  req.body.pass,
+                email:  req.body.email,
                 password: req.body.password,
                 is_admin: req.body.is_admin,
                 picture: req.body.picture,
                 phone: req.body.phone
             });
+
+            console.log(data)
             return res.status(201).json({
                 msg: `Registrasi Berhasil`, data
             });
@@ -83,7 +95,7 @@ module.exports = {
                 { expiresIn: "24h" },
             );
 
-            let token = generateToken(payload);
+            // let token = generateToken(payload); 
         
             res.status(200).json({
                 status: "Success",
