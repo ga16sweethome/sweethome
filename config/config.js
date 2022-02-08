@@ -1,11 +1,11 @@
 require("dotenv").config();
 module.exports = {
     development: {
-        username: "root",
-        password: "ventrinet",
-        database: "sweet",
-        host: "localhost",
-        dialect: "mysql",
+        username: process.env.POSTGRES_USER,
+        password: process.env.POSTGRES_PASSWORD,
+        database: process.env.POSTGRES_DATABASE,
+        host: process.env.POSTGRES_HOST,
+        dialect: "postgres",
     },
     test: {
         username: "root",
