@@ -1,10 +1,12 @@
 const express = require("express")
 const router = express.Router()
 const showcase = require("./showcase")
-const appointment = require("./appointment")
 const user = require('./user')
+const project = require('./project')
+const favorite = require("./favorite")
 
 router.use("/user", user)
-router.use("/appointment", appointment)
 router.use("/showcase",showcase)
+router.use("/project",project)
+router.use("/favorite",favorite)
 module.exports = router

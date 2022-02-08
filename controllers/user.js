@@ -4,8 +4,9 @@ const errorHandler = require("../helpers/error-handler")
 module.exports = {
     getOne: async (req, res) => {
         try {
-            //const data = req.user // DARI TOKEN
-            const data = await User.findOne({where:1})
+            //const id = req.user.id // DARI TOKEN
+            const id = 3 //sementara idnya dibuat static 
+            const data = await User.findOne({where:id})
             const result = {
                 id: data.id,
                 name: `${data.firstName} ${data.lastName}`,
