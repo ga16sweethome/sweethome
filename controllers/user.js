@@ -40,6 +40,13 @@ module.exports = {
                     message: error.message,
                   });
             }
+            const check  = await User.findOne({email})
+            if (check){
+                return res.status(401).json({
+                    status : "Failed",
+                    message : "This Email Already Used"
+                })
+            }
             const passwordhashed = hashPassword(password)
             const data = await User.create({
                 firstName,
