@@ -1,8 +1,9 @@
 const router = require("express").Router()
 const { getAllFavoriteByUserId, createFavorite,deleteFavorite } = require("../controllers/favorite")
+const {isLogin} = require("../middlewares/userAuth")
 
-router.get("/:id",getAllFavoriteByUserId)   //sementara userId :id ngambil dari params, nunggu tokennya dibuat
-router.post("/:showcaseId",createFavorite)
-router.delete(":showcaseId/",deleteFavorite)
+router.get("/",isLogin,getAllFavoriteByUserId)  
+router.post("/:showcaseId",isLogin,createFavorite)
+router.delete("/:showcaseId",isLogin,deleteFavorite)
 
 module.exports = router

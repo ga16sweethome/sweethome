@@ -8,7 +8,7 @@ module.exports = {
         try {
             //const data = req.user // DARI TOKEN
             const data = await Favorite.findAll (
-                { where : { userId : id  },
+                { where : { userId : req.user.id  },
                   attributes : {
                       exclude : ["id","createdAt","updatedAt"]
                     },
@@ -27,31 +27,46 @@ module.exports = {
         }
     },
   createFavorite: async (req, res) => {
-      const {showcaseId} = req.params 
+      const {showcaseId} = req.params
+      const userId = req.user.id
       try {
-      
-          const user = 3 //seharusnya ngambil dari req.user (dari TOKEN), sementara dikasih value default 3
-          const checkfavorite = await Favorite.findAll({
-              where : 
-              {userId : user,
-              showcaseId
-              }
-           })  
-          if (!checkfavorite)   
-          {
-             const favorite = await Favorite.create({
-                userId : user,
-                showcaseId
-              })  
-             return res.status(200).json(favorite) 
+        const findfavorite = await Favorite.findAll({
+          where : {
+            showcaseId,
+            userId 
           }
-        
-        res.status(200).json({})
+        })
+        if (!findfavorite.length == 0){
+          return res.status(400).json({
+            status : "Bad Request",
+            message : "Already include fovurites"
+          })
+        }
+        const favorite = await Favorite.create({userId ,showcaseId})  
+        res.status(200).json({favorite })
       } catch (error) {
           errorHandler(res, error)
       }
   },
   deleteFavorite : async (req, res) =>{
-      
+    const {showcaseId} = req.params
+    const userId = req.user.id
+      try {
+        const deleteFav = await Favorite.destroy({where : {showcaseId,userId}})
+       if (!deleteFav){
+         return res.status(404).json({
+           status : "Not Found",
+           message : "Already exclude from favourite",
+        
+         })
+       }
+       res.status(200).json({
+         status  : "Success",
+         message : "Data Success Deleted",
+       
+       })
+      } catch (error) {
+        errorHandler(res,error)
+      }
   }
 }
