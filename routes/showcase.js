@@ -1,7 +1,10 @@
 const router = require("express").Router()
-const { getOne } = require("../controllers/showcase")
+const { createFavorite } = require("../controllers/favorite")
+const { getOneShowcase, getAllShowcase } = require("../controllers/showcase")
 
-router.get("/:id", getOne)
-router.post("/")
+router.get("/:id", getOneShowcase)
+router.get("/", getAllShowcase)
+
+router.post("/favorite/:showcaseId",createFavorite)
 
 module.exports = router
