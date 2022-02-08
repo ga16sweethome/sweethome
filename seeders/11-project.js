@@ -10,7 +10,7 @@ module.exports = {
         uploadReceipt : "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/ReceiptSwiss.jpg/180px-ReceiptSwiss.jpg",
         noteUploadReceipt : "bukti transfer",
         userId : 4,
-        status : 2,
+        status : 3,
         createdAt : new Date(),
         updatedAt : new Date()
        },
