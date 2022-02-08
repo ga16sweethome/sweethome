@@ -3,9 +3,8 @@ const { createFavorite } = require("../controllers/favorite")
 const { getOneShowcase, getAllShowcase } = require("../controllers/showcase")
 const {isLogin} = require("../middlewares/userAuth")
 
-router.get("/:id",isLogin, getOneShowcase)
+router.get("/:id", getOneShowcase)
 router.get("/", getAllShowcase)
 
-router.post("/favorite/:showcaseId",createFavorite)
 
 module.exports = router
