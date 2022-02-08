@@ -67,48 +67,63 @@ module.exports = {
     },
 
     login: async (req, res) => {
-       const {email,password} = req.body
-        try {
-            const user = await User.findOne({
-                where: {
-                email,
-                },
-            });
-
-            if (!user) {
-                return res.status(401).json({
-                status: "Unauthorized",
-                message: "Invalid email and password combination",
-                result: {},
-                });
+        const {email,password} = req.body
+         try {
+             const schema = Joi.object({
+                 email: Joi.string().email().required(),
+                 password: Joi.string().min(6).required(),
+               });
+ 
+             const { error } = schema.validate(req.body);
+               if(error) {
+                   return res.status(400).json({
+                       status: "Bad Request",
+                       message: error.message,
+                     });
+               }
+ 
+             const user = await User.findOne({
+                 where: {
+                 email,
+                 },
+             });
+ 
+             if (!user) {
+                 return res.status(401).json({
+                 status: "Unauthorized",
+                 message: "Invalid email and password combination",
+                 result: {},
+                 });
+             }
+            const checkPassword = comparePassword(password, user.password);
+            if(!checkPassword){
+             return res.status(401).json({
+                 message: "Incorrect Username or Password",
+                 status: "Unauthorized",
+               });
             }
-            
-            const token = generateToken({
-                id: user.id,
-                email: user.email,
-                name : `${user.firstName} ${user.lastName}`
-              })            
-           // let token = generateToken(payload); 
-        
-            res.status(200).json({
-                status: "Success",
-                message: "Logged in successfully",
-                result: {
-                token,
-                },
-            });
-
-        }
-
-
-
-        catch(error) {
-            errorHandler(res, error)
-            return res.status(500).json({
-                status: "Internal Server Error",
-                message: error.message,
-                result: {},
-            });
-        }
-    }
+             const token = generateToken({
+                 id: user.id,
+                 email: user.email,
+                 name : `${user.firstName} ${user.lastName}`,
+                 picture : user.picture,
+                 phone : user.phone
+               })            
+            // let token = generateToken(payload); 
+         
+             res.status(200).json({
+                 status: "Success",
+                 message: "Logged in successfully",
+                 result: {token}
+             });
+ 
+         }
+ 
+ 
+ 
+         catch(error) {
+             errorHandler(res, error)
+             
+         }
+     }
 }
