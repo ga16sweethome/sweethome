@@ -40,7 +40,9 @@ module.exports = {
                     message: error.message,
                   });
             }
-            const check  = await User.findOne({email})
+            
+            const check  = await User.findOne({where :{email}})
+            console.log(check)
             if (check){
                 return res.status(401).json({
                     status : "Failed",
@@ -112,7 +114,9 @@ module.exports = {
             const token = generateToken({
                 id: user.id,
                 email: user.email,
-                name : `${user.firstName} ${user.lastName}`
+                name : `${user.firstName} ${user.lastName}`,
+                picture : user.picture,
+                phone : user.phone
               })            
            // let token = generateToken(payload); 
         
