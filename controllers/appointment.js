@@ -3,13 +3,17 @@ const errorHandler = require("../helpers/error-handler")
 
 
 module.exports = {
-    getOne: async (req, res) => {
-        const {id} = req.params
+    getAll: async (req, res) => {
         try {
-            //const data = req.user // DARI TOKEN
-            const data = await Appointment.findAll ({ where : { id  },})
-            
-            res.status(200).json(data)
+            const data = req.user
+            const result = await Appointment.findAll ({ where : { userId: data.id },})
+            if (!result) {
+                return res.status(401).json({
+                    message: "Not Found",
+                    result: {}
+                })
+            }
+            res.status(200).json(result)
         } catch (error) {
             errorHandler(res, error)
         }

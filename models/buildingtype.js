@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       BuildingType.hasMany(models.Appointment, {
         foreignKey: "buildingTypeId",
         as: "buildingType",
+        foreignkey: "buildingTypeId",
       });
     }
   }

@@ -1,5 +1,6 @@
 const router = require("express").Router()
-const { getOne } = require("../controllers/appointment")
+const { getAll } = require("../controllers/appointment")
 
-router.get("/:id", getOne)
+router.get("/", getAll)
+
 module.exports = router
