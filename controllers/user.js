@@ -31,7 +31,7 @@ module.exports = {
         
         try {
 
-            console.log(req.body)
+            // console.log(data)
             const data = await User.create({
                 firstName: req.body.firstName,
                 lastName: req.body.lastName,
@@ -50,10 +50,10 @@ module.exports = {
 
         catch(error) {
             errorHandler(res, error)
-            console.log(err)
+            console.log(error)
             res.status(500).json({
                 msg: `Registrasi Gagal`,
-                error: err.message
+                error: error.message
             });
         }
         
