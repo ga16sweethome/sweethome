@@ -33,7 +33,16 @@ module.exports = {
                 date: joi.date().format("YYYY-MM-DD").required(),
                 time: joi.string().required()
             })
-            const { error } = schema.validate(body)
+            const { error } = schema.validate({
+                buildingType: body.buildingType,
+                serviceType : body.serviceType,
+                estimateTime: body.estimateTime,
+                budget: body.budget,
+                address: body.address,
+                note: body.note,
+                date: body.date,
+                time: body.time
+            })
             if (error) {
                 return res.status(400).json({
                     status: "Bad Request",
@@ -45,7 +54,6 @@ module.exports = {
             const buildingType = await BuildingType.findOne({ where: { name: body.buildingType }})
             const serviceType = await ServiceType.findOne({ where: { name: body.serviceType }})
 
-            
             const timeslot = await Timeslot.findOne({
                 where: {
                     time: body.time,
@@ -55,8 +63,6 @@ module.exports = {
         
             const create = await Appointment.create({
                 userId: user.id,
-                buildingType: buildingType.id,
-                serviceType: serviceType.id,
                 estimateTime: body.estimateTime,
                 budget: body.budget,
                 address: body.address,
@@ -66,25 +72,24 @@ module.exports = {
                 status: 1
             })
             
-            const code = () => {
-                var str = "" + create.id
-                var pad = "0000"
-                var ans = pad.substring(0, pad.length - str.length) + str
-                return "A#" + ans
-            }
-            console.log(create.id)
-            const update = await Appointment.update({ 
-                where :
-                {id:create.id},
-                code : code()  
-                 })
-            
-            await LastActivity.update({
-                where: { userId: user.id },
-                submitted: create.createdAt
-            },
+            let str = "" + create.id
+            let pad = "0000"
+            let ans = pad.substring(0, pad.length - str.length) + str
+            let code = "A#" + ans
+            await Appointment.update(
+                { 
+                    code,
+                    buildingType: buildingType.id,
+                    serviceType: serviceType.id,
+                },
+                { where: { id: create.id }}
             )
 
+            await LastActivity.update(
+                { submitted: create.createdAt },
+                { where: { userId: user.id }}
+            )
+            
             const section = await Section.findAll({ where: { name: body.sections }})
             const sectionId = section.map( el => el.id )
             const appointmentJunkSection = []
@@ -105,7 +110,8 @@ module.exports = {
                 })                
             } await AppointmentJunkStyle.bulkCreate(appointmentJunkStyle)
 
-            res.status(200).json(update)
+            const result = await Appointment.findOne({ where: { id: create.id }})
+            res.status(200).json(result)
         } catch (error) {
             errorHandler(res, error)
         }
