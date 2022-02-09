@@ -63,6 +63,8 @@ module.exports = {
         
             const create = await Appointment.create({
                 userId: user.id,
+                buildingTypeId: buildingType.id,
+                serviceTypeId: serviceType.id,
                 estimateTime: body.estimateTime,
                 budget: body.budget,
                 address: body.address,
@@ -77,11 +79,7 @@ module.exports = {
             let ans = pad.substring(0, pad.length - str.length) + str
             let code = "A#" + ans
             await Appointment.update(
-                { 
-                    code,
-                    buildingType: buildingType.id,
-                    serviceType: serviceType.id,
-                },
+                { code },
                 { where: { id: create.id }}
             )
 
