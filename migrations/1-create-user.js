@@ -23,7 +23,7 @@ module.exports = {
       },
       is_admin: {
         type: Sequelize.BOOLEAN,
-        defaulValue : false
+        defaultValue : false
       },
       picture: {
         type: Sequelize.STRING,

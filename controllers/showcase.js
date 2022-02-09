@@ -1,6 +1,17 @@
 const {
-  Favorite,  Showcase,  ShowcaseType,  Project,  Appointment,  ProjectDetail,
-  ServiceType,  Section,  BuildingType,  ProjectType,  ShowcaseJunkStyle,ShowcaseJunkProjectType,  Style,
+  Favorite,
+  Showcase,
+  ShowcaseType,
+  Project,
+  Appointment,
+  ProjectDetail,
+  ServiceType,
+  Section,
+  BuildingType,
+  ProjectType,
+  ShowcaseJunkStyle,
+  ShowcaseJunkProjectType,
+  Style,
 } = require("../models");
 const errorHandler = require("../helpers/error-handler");
 
@@ -9,70 +20,102 @@ module.exports = {
     const { id } = req.params;
     try {
       //const userId = req.user.id // DARI TOKEN
-      const total={}
-      const find = await Showcase.findAll({ where:{id}}
-        );
+      const total = {};
+      const find = await Showcase.findAll({ where: { id }, raw: true });
 
-      let query = { 
-        where : { id,is_shown : true,},
-        attributes : {
-            exclude : ["id","createdAt","updatedAt","is_shown","createdBy","showcaseTypeId","projectId"]
-          },
-        include : [{
-            model : ShowcaseJunkStyle,
-            as : "showcaseJunkstyle",
-            attributes : {
-              exclude : ["id","createdAt","updatedAt",]
+      let query = {
+        where: { id, is_shown: true },
+        attributes: {
+          exclude: [
+            "id",
+            "createdAt",
+            "updatedAt",
+            "is_shown",
+            "createdBy",
+            "showcaseTypeId",
+            "projectId",
+          ],
+        },
+        include: [
+          {
+            model: ShowcaseJunkProjectType,
+            as: "showcaseJunkProjectType",
+            attributes: {
+              exclude: ["id", "createdAt", "updatedAt", "projectTypeId"],
             },
-            include : [{
-              model : Style,
-              as : "style",
-              attributes : {
-                exclude : ["id","createdAt","updatedAt","showcaseId"]
-              }
+            include: [
+              {
+                model: ProjectType,
+                as: "projectType",
+                attributes: {
+                  exclude: ["id", "createdAt", "updatedAt", "showcaseId"],
+                },
               },
-            ]
+            ],
           },
           {
-            model : ShowcaseJunkProjectType,
-            as : "showcaseJunkProjectType",
-            attributes : {
-              exclude : ["id","createdAt","updatedAt"]
+            model: ShowcaseJunkStyle,
+            as: "showcaseJunkstyle",
+            attributes: {
+              exclude: ["id", "createdAt", "updatedAt"],
             },
-            include : [{
-              model : ProjectType,
-              as : "projectType",
-              attributes : {
-                exclude : ["id","createdAt","updatedAt","showcaseId"]
-              }
+            include: [
+              {
+                model: Style,
+                as: "style",
+                attributes: {
+                  exclude: ["id", "createdAt", "updatedAt", "showcaseId"],
+                },
               },
-            ]
-          }
-        ]
-    }
-
-      if(find[0].showcaseTypeId == 1) 
-      {
-        query =  {
-          where: {
-            id: id,
-            is_shown: true,
+            ],
           },
+        ],
+      };
+
+      if (find[0].showcaseTypeId == 1) {
+        query = {
+          where: { id, is_shown: true },
           attributes: {
-            exclude: ["id","createdAt","updatedAt","createdBy","is_shown","showcaseTypeId","projectId",],
+            exclude: [
+              "id",
+              "createdAt",
+              "updatedAt",
+              "createdBy",
+              "is_shown",
+              "showcaseTypeId",
+              "projectId",
+            ],
           },
           include: [
+            {
+              model: ShowcaseJunkProjectType,
+              as: "showcaseJunkProjectType",
+              attributes: {
+                exclude: ["id", "createdAt", "updatedAt", "projectTypeId"],
+              },
+              include: [
+                {
+                  model: ProjectType,
+                  as: "projectType",
+                  attributes: {
+                    exclude: ["id", "createdAt", "updatedAt", "showcaseId"],
+                  },
+                },
+              ],
+            },
             {
               model: ShowcaseJunkStyle,
               as: "showcaseJunkstyle",
               attributes: {
-                exclude: ["id", "createdAt", "updatedAt", "showcaseId"],
+                exclude: ["id", "createdAt", "updatedAt"],
               },
               include: [
                 {
                   model: Style,
                   as: "style",
-                  attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+                  attributes: {
+                    exclude: ["id", "createdAt", "updatedAt", "showcaseId"],
+                  },
                 },
               ],
             },
@@ -146,63 +189,51 @@ module.exports = {
                       "sectionId",
                     ],
                   },
-                  include: [
-                    {
-                      model: ProjectType,
-                      as: "projectType",
-                      attributes: {
-                        exclude: ["id", "createdAt", "updatedAt"],
-                      },
-                    },
-                    {
-                      model: Section,
-                      as: "section",
-                      attributes: {
-                        exclude: ["id", "createdAt", "updatedAt"],
-                      },
-                    },
-                  ],
                 },
               ],
             },
           ],
+          // raw : true
+        };
+      }
+
+      const data = await Showcase.findAll(query);
+
+      const checkFavortis = await Favorite.findAll({
+        where: {
+          userId: req.user.id, //nanti dari req.user.id (token)
+          showcaseId: id,
+        },
+      });
+
+      let IsFavorite = true;
+      if (checkFavortis.length == 0) {
+        IsFavorite = false;
+      }
+
+      if (find[0].showcaseTypeId == 1) {
+        const price = data[0].project.projectDetail;
+        let sumPrice = 0,
+          sumArea = 0;
+        sumWorkDuration = 0;
+
+        for (let i = 0; i < price.length; i++) {
+          sumPrice += data[0].project.projectDetail[i].price;
+          total.Cost = sumPrice;
+          sumArea += data[0].project.projectDetail[i].area;
+          total.Area_Size = sumArea;
+          sumWorkDuration += data[0].project.projectDetail[i].workDuration;
+          total.RenovationDuration = sumWorkDuration;
         }
       }
- 
-      const data = await Showcase.findAll(query    
-      );
-     
-      const checkFavortis = await Favorite.findAll (
-        { where : {
-          userId : req.user.id, //nanti dari req.user.id (token)
-          showcaseId : id },
-         })
-         total.IsFavorite = true
-     if(checkFavortis.length ==0){
-        total.IsFavorite = false
-     }
-      
-   
-    if(find[0].showcaseTypeId == 1) {const price = data[0].project.projectDetail
-      let sumPrice = 0,sumArea=0;sumWorkDuration = 0
-      
-      for ( let i = 0;i<price.length;i++)
-      { sumPrice +=  data[0].project.projectDetail[i].price
-        total.Cost = sumPrice
-        sumArea +=  data[0].project.projectDetail[i].area
-        total.Area_Size = sumArea
-        sumWorkDuration +=  data[0].project.projectDetail[i].workDuration
-        total.RenovationDuration = sumWorkDuration
+
+      if (data.length === 0) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: "UnAuthorized",
+        });
       }
-    }
-       
-    if(data.length===0){
-      return res.status(400).json({
-        status : "Bad Request",
-        message : "UnAuthorized"
-      })
-    }
-      res.status(200).json({data,total});
+      res.status(200).json({ data, IsFavorite, total, checkFavortis });
     } catch (error) {
       errorHandler(res, error);
     }
@@ -213,7 +244,7 @@ module.exports = {
       //const data = req.user // DARI TOKEN
       let query = {};
       const data = await Showcase.findAll({
-        where : {is_shown :true},
+        where: { is_shown: true },
         order: [["id", "ASC"]],
         include: [
           {
@@ -223,13 +254,12 @@ module.exports = {
               exclude: ["id", "createdAt", "updatedAt"],
             },
           },
-          { 
+          {
             model: Project,
             as: "project",
             attributes: {
               exclude: ["id", "createdAt", "updatedAt"],
             },
-            
           },
         ],
         // attributes : {
