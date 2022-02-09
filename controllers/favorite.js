@@ -68,5 +68,27 @@ module.exports = {
       } catch (error) {
         errorHandler(res,error)
       }
+  },
+  checkFavorite : async (req,res)=>{
+    const {id} = req.params
+    try {
+      let isFavorite = true
+      const checkFavortis = await Favorite.findAll (
+        { where : {
+          userId : req.user.id, //nanti dari req.user.id (token)
+          showcaseId : id },
+         })
+
+    isFavorite = true
+     if(checkFavortis.length ==0){
+        isFavorite = false
+     }
+
+     res.status(200).json({
+       result : isFavorite
+     })
+    } catch (error) {
+      errorHandler(res,error)
+    }
   }
 }

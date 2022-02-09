@@ -18,7 +18,7 @@ module.exports = {
        },
        {
         userId : 6,
-        showcaseId : 2,
+        showcaseId : 4,
         createdAt : new Date(),
         updatedAt : new Date()
        },

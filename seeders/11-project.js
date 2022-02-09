@@ -17,7 +17,7 @@ module.exports = {
        {
         code : "#P-0002",
         appointmentId : 7,
-        userId : 5,
+        userId : 3,
         status : 1,
         createdAt : new Date(),
         updatedAt : new Date()

@@ -10,9 +10,8 @@ module.exports = {
     try {
       //const userId = req.user.id // DARI TOKEN
       const total={}
-      const find = await Showcase.findAll({ where:{id}}
-        );
-
+      const find = await Showcase.findAll({ where:{id}});
+      console.log(find.name)
       let query = { 
         where : { id,is_shown : true,},
         attributes : {
@@ -50,7 +49,6 @@ module.exports = {
           }
         ]
     }
-
       if(find[0].showcaseTypeId == 1) 
       {
         query =  {
@@ -172,17 +170,8 @@ module.exports = {
       const data = await Showcase.findAll(query    
       );
      
-      const checkFavortis = await Favorite.findAll (
-        { where : {
-          userId : req.user.id, //nanti dari req.user.id (token)
-          showcaseId : id },
-         })
-         total.IsFavorite = true
-     if(checkFavortis.length ==0){
-        total.IsFavorite = false
-     }
-      
-   
+     
+  
     if(find[0].showcaseTypeId == 1) {const price = data[0].project.projectDetail
       let sumPrice = 0,sumArea=0;sumWorkDuration = 0
       

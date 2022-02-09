@@ -1,5 +1,8 @@
 const router = require("express").Router()
-const { getAllProjectById } = require("../controllers/project")
+const { getAllProjectByUser, uploadReceipt, check } = require("../controllers/project")
+const { isLogin } = require("../middlewares/userAuth")
 
-router.get("/:id", getAllProjectById) //sementara userId :id ngambil dari params, nunggu tokennya dibuat
+router.get("/",isLogin, getAllProjectByUser)
+router.post("/receipt/:id",isLogin, uploadReceipt)
+router.get("/a",check)
 module.exports = router
