@@ -14,6 +14,8 @@ const {
   Style,
 } = require("../models");
 const errorHandler = require("../helpers/error-handler");
+const { Op } = require("sequelize"); //use Op from Sequelize
+const appointment = require("./appointment");
 
 module.exports = {
   getOneShowcase: async (req, res) => {
@@ -206,9 +208,10 @@ module.exports = {
         },
       });
 
-      let IsFavorite = true;
       if (checkFavortis.length == 0) {
-        IsFavorite = false;
+        data.push({ IsFavorite: false });
+      } else {
+        data.push({ IsFavorite: true });
       }
 
       if (find[0].showcaseTypeId == 1) {
@@ -233,41 +236,87 @@ module.exports = {
           message: "UnAuthorized",
         });
       }
-      res.status(200).json({ data, IsFavorite, total, checkFavortis });
+      res.status(200).json({ data, total });
     } catch (error) {
       errorHandler(res, error);
     }
   },
-
   getAllShowcase: async (req, res) => {
+    let { page, section, styles, keywords } = req.query;
     try {
-      //const data = req.user // DARI TOKEN
-      let query = {};
-      const data = await Showcase.findAll({
+      const data1 = await Showcase.findAndCountAll({
         where: { is_shown: true },
-        order: [["id", "ASC"]],
-        include: [
-          {
-            model: ShowcaseType,
-            as: "showcaseType",
-            attributes: {
-              exclude: ["id", "createdAt", "updatedAt"],
-            },
+      });
+      const jumlahPage = Math.ceil(data1.count / 8);
+
+      if (!page) {
+        page = 1;
+      }
+      let sectionQuery;
+      if (section) {
+        sectionQuery = {
+          name: section,
+        };
+      }
+      let stylesQuery;
+      if (styles) {
+        stylesQuery = {
+          name: styles,
+        };
+      }
+
+      let keywordsQuery;
+      if (keywords) {
+        keywordsQuery = {
+          name: {
+            [Op.iLike]: `%${keywords}%`, //use where like % % clause to get title where contains the keywords
           },
+        };
+      }
+
+      const data = await Showcase.findAll({
+        limit: 8,
+        offset: (page - 1) * 8,
+        where: {
+          is_shown: true,
+          ...keywordsQuery,
+        },
+        order: [["createdAt", "DESC"]],
+        nest: true,
+        raw: true,
+        include: [
           {
             model: Project,
             as: "project",
-            attributes: {
-              exclude: ["id", "createdAt", "updatedAt"],
-            },
+            include: [
+              {
+                model: Appointment,
+                as: "appointment",
+              },
+            ],
           },
         ],
-        // attributes : {
-        //   exclude : ["id","createdAt","updatedAt"]
-        // }
       });
 
-      res.status(200).json({ data });
+      const mencari = await Favorite.findAll({
+        where: { userId: req.user.id },
+      });
+      let isi = [];
+      for (let i = 0; i < mencari.length; i++) {
+        isi.push(mencari[i].showcaseId);
+      }
+
+      for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < isi.length; j++)
+          if (data[i].id === isi[j]) {
+            data[i].isFavorite = true;
+            break;
+          } else {
+            data[i].isFavorite = false;
+          }
+      }
+
+      res.status(200).json(data);
     } catch (error) {
       errorHandler(res, error);
     }

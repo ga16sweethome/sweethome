@@ -1,10 +1,8 @@
-const router = require("express").Router()
-const { createFavorite } = require("../controllers/favorite")
-const { getOneShowcase, getAllShowcase } = require("../controllers/showcase")
-const {isLogin} = require("../middlewares/userAuth")
+const router = require("express").Router();
+const { getOneShowcase, getAllShowcase } = require("../controllers/showcase");
+const { isLogin } = require("../middlewares/userAuth");
 
-router.get("/:id", isLogin,getOneShowcase)
-router.get("/", getAllShowcase)
+router.get("/:id", isLogin, getOneShowcase);
+router.get("/", isLogin, getAllShowcase);
 
-
-module.exports = router
+module.exports = router;

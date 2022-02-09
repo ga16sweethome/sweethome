@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "qvzamkpn",
-    "password": "61gXhBXT1IrT-Z50eB_gwRV0TL1MxCzk",
-    "database": "qvzamkpn",
-    "host": "rosie.db.elephantsql.com",
+    "username": "postgres",
+    "password": "admin",
+    "database": "sweethome",
+    "host": "127.0.0.1",
     "dialect": "postgres"
   },
   "test": {
