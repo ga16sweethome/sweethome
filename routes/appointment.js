@@ -3,6 +3,6 @@ const { getAll, create } = require("../controllers/appointment")
 const { isLogin } = require("../middlewares/userAuth")
 
 router.get("/", isLogin, getAll)
-router.post("/create", isLogin, create)
+router.post("/", isLogin, create)
 
 module.exports = router

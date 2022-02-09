@@ -28,8 +28,8 @@ module.exports = {
                 serviceType: joi.string().required(),
                 estimateTime: joi.number().required(),
                 budget: joi.number().required(),
-                address: joi.text().required(),
-                note: joi.text().required(),
+                address: joi.string().required(),
+                note: joi.string().required(),
                 date: joi.date().format("YYYY-MM-DD").required(),
                 time: joi.string().required()
             })
@@ -42,15 +42,17 @@ module.exports = {
                 });
             }
 
-            const buildingType = await BuildingType.findOne({ where: { buildingType: body.buildingType }})
-            const serviceType = await ServiceType.findOne({ where: { serviceType: body.serviceType }})
+            const buildingType = await BuildingType.findOne({ where: { name: body.buildingType }})
+            const serviceType = await ServiceType.findOne({ where: { name: body.serviceType }})
+
+            
             const timeslot = await Timeslot.findOne({
                 where: {
                     time: body.time,
                     serviceTypeId: serviceType.id
                 }
             })
-
+        
             const create = await Appointment.create({
                 userId: user.id,
                 buildingType: buildingType.id,
@@ -63,15 +65,20 @@ module.exports = {
                 timeslotId: timeslot.id,
                 status: 1
             })
-
+            
             const code = () => {
                 var str = "" + create.id
                 var pad = "0000"
                 var ans = pad.substring(0, pad.length - str.length) + str
                 return "A#" + ans
             }
-            const update = await Appointment.update({ code })
-
+            console.log(create.id)
+            const update = await Appointment.update({ 
+                where :
+                {id:create.id},
+                code : code()  
+                 })
+            
             await LastActivity.update({
                 where: { userId: user.id },
                 submitted: create.createdAt

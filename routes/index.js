@@ -14,7 +14,7 @@ router.use("/user", user)
 router.use("/showcase",showcase)
 router.use("/content", content)
 router.use("/timeslot", timeslot)
-router.user("/appointment", appointment)
+router.use("/appointment", appointment)
 router.use("/project",project)
 router.use("/favorite",favorite)
 
