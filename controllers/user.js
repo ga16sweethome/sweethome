@@ -31,14 +31,14 @@ module.exports = {
                 lastName: Joi.string().required(),
                 email: Joi.string().email().required(),
                 password: Joi.string().min(6).required(),
-              });
+            });
             // console.log(data)
             const { error } = schema.validate(req.body);
             if(error) {
                 return res.status(400).json({
                     status: "Bad Request",
                     message: error.message,
-                  });
+                });
             }
             const passwordhashed = hashPassword(password)
             const data = await User.create({
