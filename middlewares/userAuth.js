@@ -27,7 +27,12 @@ module.exports = {
                 });
             }
 
-            const user = await User.findByPk(decoded.id);
+            const user = await User.findOne({
+                where : {
+                    id :decoded.id,
+                    is_admin : false
+            }});
+
             if (!user) {
                 return res.status(401).json({
                 message: "User is not found",
@@ -40,6 +45,7 @@ module.exports = {
                 id: user.id,
                 name: `${user.firstName} ${user.lastName}`,
                 email: user.email,
+                is_admin : user.is_admin
         };
             next();
         } catch (error) {
