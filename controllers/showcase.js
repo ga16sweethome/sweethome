@@ -12,16 +12,36 @@ const {
   ShowcaseJunkStyle,
   ShowcaseJunkProjectType,
   Style,
+  User,
 } = require("../models");
 const errorHandler = require("../helpers/error-handler");
 const { Op } = require("sequelize"); //use Op from Sequelize
 const appointment = require("./appointment");
+const { verifyToken } = require("../helpers/jwt");
 
 module.exports = {
   getOneShowcase: async (req, res) => {
     const { id } = req.params;
     try {
-      //const userId = req.user.id // DARI TOKEN
+      let token = req.header("Authorization");
+
+      if (token) {
+        token = token.replace("Bearer ", "");
+        const decoded = verifyToken(token);
+        if (decoded) {
+          const user = await User.findOne({
+            where: {
+              id: decoded.id,
+            },
+          });
+          if (user) {
+            req.user = {
+              id: user.id,
+            };
+          }
+        }
+      }
+
       const total = {};
       const find = await Showcase.findAll({ where: { id }, raw: true });
 
@@ -201,17 +221,21 @@ module.exports = {
 
       const data = await Showcase.findAll(query);
 
-      const checkFavortis = await Favorite.findAll({
-        where: {
-          userId: req.user.id, //nanti dari req.user.id (token)
-          showcaseId: id,
-        },
-      });
+      if (req.user) {
+        const checkFavortis = await Favorite.findAll({
+          where: {
+            userId: req.user.id, //nanti dari req.user.id (token)
+            showcaseId: id,
+          },
+        });
 
-      if (checkFavortis.length == 0) {
-        data.push({ IsFavorite: false });
+        if (checkFavortis.length == 0) {
+          data.push({ IsFavorite: false });
+        } else {
+          data.push({ IsFavorite: true });
+        }
       } else {
-        data.push({ IsFavorite: true });
+        data.push({ IsFavorite: false });
       }
 
       if (find[0].showcaseTypeId == 1) {
@@ -244,6 +268,25 @@ module.exports = {
   getAllShowcase: async (req, res) => {
     let { page, section, styles, keywords } = req.query;
     try {
+      let token = req.header("Authorization");
+
+      if (token) {
+        token = token.replace("Bearer ", "");
+        const decoded = verifyToken(token);
+        if (decoded) {
+          const user = await User.findOne({
+            where: {
+              id: decoded.id,
+            },
+          });
+          if (user) {
+            req.user = {
+              id: user.id,
+            };
+          }
+        }
+      }
+
       const data1 = await Showcase.findAndCountAll({
         where: { is_shown: true },
       });
@@ -252,17 +295,15 @@ module.exports = {
       if (!page) {
         page = 1;
       }
-      let sectionQuery;
+
+      let isiSection = [];
       if (section) {
-        sectionQuery = {
-          name: section,
-        };
+        isiSection = section.split(",");
       }
-      let stylesQuery;
+
+      let isiStyle = [];
       if (styles) {
-        stylesQuery = {
-          name: styles,
-        };
+        isiStyle = styles.split(",");
       }
 
       let keywordsQuery;
@@ -274,36 +315,108 @@ module.exports = {
         };
       }
 
-      const data = await Showcase.findAll({
+      let data = await Showcase.findAll({
         limit: 8,
         offset: (page - 1) * 8,
         where: {
           is_shown: true,
           ...keywordsQuery,
         },
-        order: [["createdAt", "DESC"]],
-        nest: true,
-        raw: true,
+        // order: [["id", "DESC"]],
         include: [
           {
             model: Project,
             as: "project",
+            where: {
+              ...keywordsQuery,
+            },
             include: [
               {
-                model: Appointment,
-                as: "appointment",
+                model: ProjectDetail,
+                as: "projectDetail",
+                include: [
+                  {
+                    model: Section,
+                    as: "section",
+                    where: {
+                      name: {
+                        [Op.or]: isiSection,
+                      },
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: ShowcaseJunkStyle,
+            as: "showcaseJunkstyle",
+            include: [
+              {
+                model: Style,
+                as: "style",
+                where: {
+                  name: {
+                    [Op.or]: isiStyle,
+                  },
+                },
+              },
+            ],
+          },
+          {
+            model: ShowcaseJunkProjectType,
+            as: "showcaseJunkProjectType",
+            include: [
+              {
+                model: ProjectType,
+                as: "projectType",
               },
             ],
           },
         ],
       });
 
-      const mencari = await Favorite.findAll({
-        where: { userId: req.user.id },
-      });
+      data = JSON.parse(JSON.stringify(data));
+
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].project) {
+          let totalPrice = 0,
+            totalArea = 0,
+            totalDuration = 0;
+
+          for (let j = 0; j < data[i].project.projectDetail.length; j++) {
+            totalPrice += data[i].project.projectDetail[j].price;
+            totalArea += data[i].project.projectDetail[j].area;
+            totalDuration += data[i].project.projectDetail[j].workDuration;
+          }
+          data[i].totalPrice = totalPrice;
+          data[i].totalArea = totalArea;
+          data[i].totalDuration = totalDuration;
+        } else {
+          data[i].totalPrice = 0;
+          data[i].totalArea = 0;
+          data[i].totalDuration = 0;
+        }
+      }
+
       let isi = [];
-      for (let i = 0; i < mencari.length; i++) {
-        isi.push(mencari[i].showcaseId);
+
+      // const datahasil = data.map((el, i) => {
+      //   el.price = sumPrice[i];
+      // });
+      // console.log(datahasil);
+
+      if (req.user) {
+        const mencari = await Favorite.findAll({
+          where: { userId: req.user.id },
+        });
+
+        for (let i = 0; i < mencari.length; i++) {
+          isi.push(mencari[i].showcaseId);
+        }
+      }
+      if (isi.length === 0) {
+        isi.push("");
       }
 
       for (let i = 0; i < data.length; i++) {
