@@ -13,6 +13,7 @@ const {
   ShowcaseJunkProjectType,
   Style,
   User,
+  Gallery,
 } = require("../models");
 const errorHandler = require("../helpers/error-handler");
 const { Op } = require("sequelize"); //use Op from Sequelize
@@ -59,6 +60,13 @@ module.exports = {
           ],
         },
         include: [
+          {
+            model: Gallery,
+            as: "gallery",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "showcaseId"],
+            },
+          },
           {
             model: ShowcaseJunkProjectType,
             as: "showcaseJunkProjectType",
@@ -109,6 +117,13 @@ module.exports = {
             ],
           },
           include: [
+            {
+              model: Gallery,
+              as: "gallery",
+              attributes: {
+                exclude: ["createdAt", "updatedAt", "showcaseId"],
+              },
+            },
             {
               model: ShowcaseJunkProjectType,
               as: "showcaseJunkProjectType",
@@ -222,6 +237,7 @@ module.exports = {
       const data = await Showcase.findAll(query);
 
       if (req.user) {
+        // check favorite if (req.user) from token
         const checkFavortis = await Favorite.findAll({
           where: {
             userId: req.user.id, //nanti dari req.user.id (token)
@@ -322,39 +338,55 @@ module.exports = {
           is_shown: true,
           ...keywordsQuery,
         },
-        // order: [["id", "DESC"]],
+        attributes: {
+          exclude: [
+            ,
+            "updatedAt",
+            "showcaseId",
+            "projectId",
+            "createdBy",
+            "showcaseTypeId",
+            "is_shown",
+          ],
+        },
+        order: [["createdAt", "DESC"]],
         include: [
           {
-            model: Project,
-            as: "project",
-            where: {
-              ...keywordsQuery,
+            model: Gallery,
+            as: "gallery",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "showcaseId"],
+            },
+          },
+          {
+            model: ShowcaseJunkProjectType,
+            as: "showcaseJunkProjectType",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
             },
             include: [
               {
-                model: ProjectDetail,
-                as: "projectDetail",
-                include: [
-                  {
-                    model: Section,
-                    as: "section",
-                    where: {
-                      name: {
-                        [Op.or]: isiSection,
-                      },
-                    },
-                  },
-                ],
+                model: ProjectType,
+                as: "projectType",
+                attributes: {
+                  exclude: ["createdAt", "updatedAt", "id"],
+                },
               },
             ],
           },
           {
             model: ShowcaseJunkStyle,
             as: "showcaseJunkstyle",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
+            },
             include: [
               {
                 model: Style,
                 as: "style",
+                attributes: {
+                  exclude: ["createdAt", "updatedAt", "id"],
+                },
                 where: {
                   name: {
                     [Op.or]: isiStyle,
@@ -364,12 +396,78 @@ module.exports = {
             ],
           },
           {
-            model: ShowcaseJunkProjectType,
-            as: "showcaseJunkProjectType",
+            model: Project,
+            as: "project",
+            where: {
+              ...keywordsQuery,
+            },
+            attributes: {
+              exclude: [
+                "id",
+                "createdAt",
+                "updatedAt",
+                "showcaseId",
+                "code",
+                "userId",
+                "uploadReceipt",
+                "noteUploadReceipt",
+                "requestCancel",
+                "reasonCancel",
+                "confirmPayment",
+                "status",
+                "completedAt",
+              ],
+            },
             include: [
               {
-                model: ProjectType,
-                as: "projectType",
+                model: Appointment,
+                as: "appointment",
+                attributes: {
+                  exclude: [
+                    "createdAt",
+                    "updatedAt",
+                    "id",
+                    "code",
+                    "userId",
+                    "buildingTypeId",
+                    "serviceTypeId",
+                    "estimateTime",
+                    "budget",
+                    "note",
+                    "timeslotId",
+                    "appointmentDate",
+                    "status",
+                    "completedAt",
+                  ],
+                },
+              },
+              {
+                model: ProjectDetail,
+                as: "projectDetail",
+                attributes: {
+                  exclude: [
+                    "id",
+                    "createdAt",
+                    "updatedAt",
+                    "projectTypeId",
+                    "projectId",
+                    "sectionId",
+                  ],
+                },
+                include: [
+                  {
+                    model: Section,
+                    as: "section",
+                    where: {
+                      name: {
+                        [Op.or]: isiSection,
+                      },
+                    },
+                    attributes: {
+                      exclude: ["id", "createdAt", "updatedAt"],
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -400,11 +498,6 @@ module.exports = {
       }
 
       let isi = [];
-
-      // const datahasil = data.map((el, i) => {
-      //   el.price = sumPrice[i];
-      // });
-      // console.log(datahasil);
 
       if (req.user) {
         const mencari = await Favorite.findAll({

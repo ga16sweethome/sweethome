@@ -14,7 +14,7 @@ const { Op } = require("sequelize");
 module.exports = {
   getAllProjectByUser: async (req, res) => {
     try {
-      const data = await Project.findAll({
+      let data = await Project.findAll({
         where: { userId: req.user.id },
         attributes: {
           exclude: ["id", "createdAt", "updatedAt"],
@@ -94,24 +94,46 @@ module.exports = {
         ],
       });
 
+      data = JSON.parse(JSON.stringify(data));
+      for (let i = 0; i < data.length; i++) {
+        data[i].status === 1
+          ? (data[i].statusName = "Waiting Payment")
+          : data[i].status === 2
+          ? (data[i].statusName = "On Going")
+          : data[i].status === 3
+          ? (data[i].statusName = "Done")
+          : data[i].status === -1
+          ? (data[i].statusName = "Cancel")
+          : "";
+      }
+
       res.status(200).json(data);
     } catch (error) {
       errorHandler(res, error);
     }
   },
-  uploadReceipt: async (req, res) => {
+  uploadReceiptClient: async (req, res) => {
+    const body = req.body;
+    const file = req.file;
     const { id } = req.params;
     const userId = req.user.id;
-    const body = req.body;
     try {
+      if (!req.file) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: "Please Insert an Image file",
+        });
+      }
       // schema mengisi validasi object sbb
 
       const schema = Joi.object({
         uploadReceipt: Joi.string().required(),
         noteUploadReceipt: Joi.string().required(),
       });
+      console.log(body);
       const { error } = schema.validate({
         ...body,
+        uploadReceipt: file.path,
       });
       if (error) {
         return res.status(400).json({
@@ -123,6 +145,7 @@ module.exports = {
       const update = await Project.update(
         {
           ...body,
+          uploadReceipt: file.path,
         },
         { where: { id, userId } }
       );
@@ -132,9 +155,16 @@ module.exports = {
           message: "Failed To Upload Receipt",
         });
       }
-      res.status(200).json({
+      const cari = await Project.findOne({
+        where: {
+          id,
+          userId,
+        },
+      });
+      res.status(201).json({
         status: "Success",
         message: "Successfully Upload Receipt",
+        result: cari,
       });
     } catch (error) {
       errorHandler(res, error);
@@ -150,6 +180,7 @@ module.exports = {
       const schema = Joi.object({
         reasonCancel: Joi.string().required(),
       });
+      let requestCancel = "Cancel By User";
       const { error } = schema.validate({
         ...body,
       });
@@ -163,6 +194,7 @@ module.exports = {
         {
           ...body,
           status: -1,
+          requestCancel: requestCancel,
         },
         {
           where: {
@@ -185,23 +217,6 @@ module.exports = {
         status: "Success",
         message: "Successfully Cancel Project",
       });
-    } catch (error) {
-      errorHandler(res, error);
-    }
-  },
-  check: async (req, res) => {
-    try {
-      const cari = await Project.findAll({
-        where: {
-          userId: {
-            [Op.not]: 4,
-          },
-          // noteUploadReceipt : {
-          //     [Op.ne]: null// "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/ReceiptSwiss.jpg/180px-ReceiptSwiss.jpg"
-          // }
-        },
-      });
-      res.status(200).json({ cari });
     } catch (error) {
       errorHandler(res, error);
     }
