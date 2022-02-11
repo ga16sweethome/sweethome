@@ -26,7 +26,6 @@ module.exports = (sequelize, DataTypes) => {
         as: "showcase",
       });
     }
-    
   }
   Project.init(
     {
@@ -39,6 +38,10 @@ module.exports = (sequelize, DataTypes) => {
       reasonCancel: DataTypes.TEXT,
       confirmPayment: DataTypes.BOOLEAN,
       status: DataTypes.INTEGER,
+      totalPrice: DataTypes.INTEGER,
+      totalArea: DataTypes.INTEGER,
+      totalDuration: DataTypes.INTEGER,
+
       completedAt: DataTypes.DATE,
     },
     {
