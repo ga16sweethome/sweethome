@@ -6,7 +6,7 @@ module.exports = {
         try {
             const { date, servicetype } = req.query
             const serviceType = await ServiceType.findOne({ where: { name: servicetype } })
-            const timeslot = await Timeslot.findAll({ 
+            let timeslot = await Timeslot.findAll({ 
                 where: { 
                     serviceTypeId: serviceType.id
                 },
@@ -40,4 +40,33 @@ module.exports = {
             errorHandler(res, error)
         }
     },
+
+    getAllByServiceType: async (req, res) => {
+        const { servicetype } = req.params
+        try {
+            const serviceType = await ServiceType.findOne({ where: { name: servicetype }})
+            const timeslot = await Timeslot.findAll({ where: { serviceTypeId: serviceType.id }})
+
+            res.status(200).json(timeslot)
+        } catch (error) {
+            errorHandler(res, error)
+        }
+    },
+
+    create: async (req, res) => {
+        const { servicetype } = req.params
+        const { start, end, quota } = req.body
+        try {
+            const serviceType = await ServiceType.findOne({ where: { name: servicetype }})
+            const timeslot = await Timeslot.create({
+                time: `${start} - ${end}`,
+                quota,
+                serviceTypeId: serviceType.id
+            })
+
+            res.status(200).json(timeslot)
+        } catch (error) {
+            errorHandler(res, error)
+        }
+    }
 }
