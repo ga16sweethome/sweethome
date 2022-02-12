@@ -29,7 +29,7 @@ module.exports = {
 
       if (token) {
         token = token.replace("Bearer ", "");
-       
+
         const decoded = verifyToken(token);
 
         if (decoded) {
@@ -159,6 +159,12 @@ module.exports = {
         // raw : true
       });
 
+      if (data.length === 0) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: "Data Not Found",
+        });
+      }
       if (req.user) {
         // check favorite if (req.user) from token
         const checkFavortis = await Favorite.findAll({
@@ -177,12 +183,6 @@ module.exports = {
         data.push({ IsFavorite: false });
       }
 
-      if (data.length === 0) {
-        return res.status(400).json({
-          status: "Bad Request",
-          message: "UnAuthorized",
-        });
-      }
       res.status(200).json({ data });
     } catch (error) {
       errorHandler(res, error);

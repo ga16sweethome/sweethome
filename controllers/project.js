@@ -180,7 +180,7 @@ module.exports = {
       const schema = Joi.object({
         reasonCancel: Joi.string().required(),
       });
-      let requestCancel = "Cancel By User";
+      let requestCancel = "user";
       const { error } = schema.validate({
         ...body,
       });
