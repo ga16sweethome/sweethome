@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Showcase.belongsTo(models.Project, {
-        foreignKey :  "projectId",    
+        foreignKey: "projectId",
         as: "project",
       });
       Showcase.belongsTo(models.ShowcaseType, {
@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
       Showcase.hasMany(models.ShowcaseJunkStyle, {
         foreignKey: "showcaseId",
         as: "showcaseJunkstyle",
+      });
+      Showcase.hasMany(models.ShowcaseJunkSection, {
+        foreignKey: "showcaseId",
+        as: "showcaseJunkSection",
       });
       Showcase.hasMany(models.Favorite, {
         foreignKey: "showcaseId",

@@ -1,4 +1,5 @@
 const {
+  ShowcaseJunkSection,
   Favorite,
   Showcase,
   ShowcaseType,
@@ -28,7 +29,9 @@ module.exports = {
 
       if (token) {
         token = token.replace("Bearer ", "");
+       
         const decoded = verifyToken(token);
+
         if (decoded) {
           const user = await User.findOne({
             where: {
@@ -43,18 +46,17 @@ module.exports = {
         }
       }
 
-      const total = {};
       const find = await Showcase.findAll({ where: { id }, raw: true });
 
-      let query = {
+      const data = await Showcase.findAll({
         where: { id, is_shown: true },
         attributes: {
           exclude: [
             "id",
             "createdAt",
             "updatedAt",
-            "is_shown",
             "createdBy",
+            "is_shown",
             "showcaseTypeId",
             "projectId",
           ],
@@ -67,6 +69,7 @@ module.exports = {
               exclude: ["createdAt", "updatedAt", "showcaseId"],
             },
           },
+
           {
             model: ShowcaseJunkProjectType,
             as: "showcaseJunkProjectType",
@@ -99,142 +102,62 @@ module.exports = {
               },
             ],
           },
-        ],
-      };
-
-      if (find[0].showcaseTypeId == 1) {
-        query = {
-          where: { id, is_shown: true },
-          attributes: {
-            exclude: [
-              "id",
-              "createdAt",
-              "updatedAt",
-              "createdBy",
-              "is_shown",
-              "showcaseTypeId",
-              "projectId",
-            ],
-          },
-          include: [
-            {
-              model: Gallery,
-              as: "gallery",
-              attributes: {
-                exclude: ["createdAt", "updatedAt", "showcaseId"],
-              },
-            },
-            {
-              model: ShowcaseJunkProjectType,
-              as: "showcaseJunkProjectType",
-              attributes: {
-                exclude: ["id", "createdAt", "updatedAt", "projectTypeId"],
-              },
-              include: [
-                {
-                  model: ProjectType,
-                  as: "projectType",
-                  attributes: {
-                    exclude: ["id", "createdAt", "updatedAt", "showcaseId"],
-                  },
-                },
+          {
+            model: Project,
+            as: "project",
+            attributes: {
+              exclude: [
+                "id",
+                "createdAt",
+                "updatedAt",
+                "code",
+                "userId",
+                "uploadReceipt",
+                "noteUploadReceipt",
+                "requestCancel",
+                "reasonCancel",
+                "confirmPayment",
+                "status",
+                "completedAt",
               ],
             },
-            {
-              model: ShowcaseJunkStyle,
-              as: "showcaseJunkstyle",
-              attributes: {
-                exclude: ["id", "createdAt", "updatedAt"],
-              },
-              include: [
-                {
-                  model: Style,
-                  as: "style",
-                  attributes: {
-                    exclude: ["id", "createdAt", "updatedAt", "showcaseId"],
-                  },
-                },
-              ],
-            },
-            {
-              model: Project,
-              as: "project",
-              attributes: {
-                exclude: [
-                  "id",
-                  "createdAt",
-                  "updatedAt",
-                  "code",
-                  "userId",
-                  "uploadReceipt",
-                  "noteUploadReceipt",
-                  "requestCancel",
-                  "reasonCancel",
-                  "confirmPayment",
-                  "status",
-                  "completedAt",
-                ],
-              },
-              include: [
-                {
-                  model: Appointment,
-                  as: "appointment",
-                  attributes: {
-                    exclude: [
-                      "completedAt",
-                      "id",
-                      "createdAt",
-                      "updatedAt",
-                      "userId",
-                      "code",
-                      "status",
-                      "timeslotId",
-                      "appointmentDate",
-                      "note",
-                      "budget",
-                      "estimateTime",
-                      "serviceTypeId",
-                      "buildingTypeId",
-                    ],
-                  },
-                  include: [
-                    {
-                      model: BuildingType,
-                      as: "buildingType",
-                      attributes: {
-                        exclude: ["id", "createdAt", "updatedAt"],
-                      },
-                    },
-                    {
-                      model: ServiceType,
-                      as: "serviceType",
-                      attributes: {
-                        exclude: ["id", "createdAt", "updatedAt"],
-                      },
-                    },
+            include: [
+              {
+                model: Appointment,
+                as: "appointment",
+                attributes: {
+                  exclude: [
+                    "completedAt",
+                    "id",
+                    "createdAt",
+                    "updatedAt",
+                    "userId",
+                    "code",
+                    "status",
+                    "timeslotId",
+                    "appointmentDate",
+                    "note",
+                    "budget",
+                    "estimateTime",
+                    "serviceTypeId",
+                    "buildingTypeId",
                   ],
                 },
-                {
-                  model: ProjectDetail,
-                  as: "projectDetail",
-                  attributes: {
-                    exclude: [
-                      "id",
-                      "createdAt",
-                      "updatedAt",
-                      "projectTypeId",
-                      "sectionId",
-                    ],
+                include: [
+                  {
+                    model: BuildingType,
+                    as: "buildingType",
+                    attributes: {
+                      exclude: ["id", "createdAt", "updatedAt"],
+                    },
                   },
-                },
-              ],
-            },
-          ],
-          // raw : true
-        };
-      }
-
-      const data = await Showcase.findAll(query);
+                ],
+              },
+            ],
+          },
+        ],
+        // raw : true
+      });
 
       if (req.user) {
         // check favorite if (req.user) from token
@@ -254,33 +177,18 @@ module.exports = {
         data.push({ IsFavorite: false });
       }
 
-      if (find[0].showcaseTypeId == 1) {
-        const price = data[0].project.projectDetail;
-        let sumPrice = 0,
-          sumArea = 0;
-        sumWorkDuration = 0;
-
-        for (let i = 0; i < price.length; i++) {
-          sumPrice += data[0].project.projectDetail[i].price;
-          total.Cost = sumPrice;
-          sumArea += data[0].project.projectDetail[i].area;
-          total.Area_Size = sumArea;
-          sumWorkDuration += data[0].project.projectDetail[i].workDuration;
-          total.RenovationDuration = sumWorkDuration;
-        }
-      }
-
       if (data.length === 0) {
         return res.status(400).json({
           status: "Bad Request",
           message: "UnAuthorized",
         });
       }
-      res.status(200).json({ data, total });
+      res.status(200).json({ data });
     } catch (error) {
       errorHandler(res, error);
     }
   },
+
   getAllShowcase: async (req, res) => {
     let { page, section, styles, keywords } = req.query;
     try {
@@ -303,11 +211,6 @@ module.exports = {
         }
       }
 
-      const data1 = await Showcase.findAndCountAll({
-        where: { is_shown: true },
-      });
-      const jumlahPage = Math.ceil(data1.count / 8);
-
       if (!page) {
         page = 1;
       }
@@ -316,13 +219,15 @@ module.exports = {
       if (section) {
         isiSection = section.split(",");
       }
+      let querySection;
+      querySection = { name: { [Op.ne]: isiSection } };
 
       let isiStyle = [];
       if (styles) {
         isiStyle = styles.split(",");
       }
 
-      let keywordsQuery;
+      let keywordsQuery = {};
       if (keywords) {
         keywordsQuery = {
           name: {
@@ -349,7 +254,7 @@ module.exports = {
             "is_shown",
           ],
         },
-        order: [["createdAt", "DESC"]],
+        order: [["id", "ASC"]],
         include: [
           {
             model: Gallery,
@@ -357,6 +262,23 @@ module.exports = {
             attributes: {
               exclude: ["createdAt", "updatedAt", "showcaseId"],
             },
+          },
+          {
+            model: ShowcaseJunkSection,
+            as: "showcaseJunkSection",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
+            },
+            include: [
+              {
+                model: Section,
+                as: "section",
+                where: {},
+                attributes: {
+                  exclude: ["createdAt", "updatedAt", "id"],
+                },
+              },
+            ],
           },
           {
             model: ShowcaseJunkProjectType,
@@ -398,9 +320,7 @@ module.exports = {
           {
             model: Project,
             as: "project",
-            where: {
-              ...keywordsQuery,
-            },
+
             attributes: {
               exclude: [
                 "id",
@@ -441,61 +361,14 @@ module.exports = {
                   ],
                 },
               },
-              {
-                model: ProjectDetail,
-                as: "projectDetail",
-                attributes: {
-                  exclude: [
-                    "id",
-                    "createdAt",
-                    "updatedAt",
-                    "projectTypeId",
-                    "projectId",
-                    "sectionId",
-                  ],
-                },
-                include: [
-                  {
-                    model: Section,
-                    as: "section",
-                    where: {
-                      name: {
-                        [Op.or]: isiSection,
-                      },
-                    },
-                    attributes: {
-                      exclude: ["id", "createdAt", "updatedAt"],
-                    },
-                  },
-                ],
-              },
             ],
           },
         ],
       });
 
+      const jumlahPage = Math.ceil(data.length / 8);
+      console.log(data.length, jumlahPage);
       data = JSON.parse(JSON.stringify(data));
-
-      for (let i = 0; i < data.length; i++) {
-        if (data[i].project) {
-          let totalPrice = 0,
-            totalArea = 0,
-            totalDuration = 0;
-
-          for (let j = 0; j < data[i].project.projectDetail.length; j++) {
-            totalPrice += data[i].project.projectDetail[j].price;
-            totalArea += data[i].project.projectDetail[j].area;
-            totalDuration += data[i].project.projectDetail[j].workDuration;
-          }
-          data[i].totalPrice = totalPrice;
-          data[i].totalArea = totalArea;
-          data[i].totalDuration = totalDuration;
-        } else {
-          data[i].totalPrice = 0;
-          data[i].totalArea = 0;
-          data[i].totalDuration = 0;
-        }
-      }
 
       let isi = [];
 
@@ -522,7 +395,7 @@ module.exports = {
           }
       }
 
-      res.status(200).json(data);
+      res.status(200).json({ data, jumlahPage });
     } catch (error) {
       errorHandler(res, error);
     }

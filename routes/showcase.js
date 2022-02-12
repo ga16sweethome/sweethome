@@ -1,6 +1,9 @@
 const router = require("express").Router();
-const { getOneShowcase, getAllShowcase } = require("../controllers/showcase");
-const { isLogin } = require("../middlewares/userAuth");
+const {
+  getOneShowcase,
+  offset,
+  getAllShowcase,
+} = require("../controllers/showcase");
 
 router.get("/:id", getOneShowcase);
 router.get("/", getAllShowcase);

@@ -1,7 +1,8 @@
-const { User } = require("../models");
+const { User, LastActivity } = require("../models");
 const { verifyToken } = require("../helpers/jwt");
 const errorHandler = require("../helpers/error-handler");
-const { decode } = require("jsonwebtoken");
+const { DATE } = require("sequelize");
+// const { decode } = require("jsonwebtoken");
 
 module.exports = {
   isLogin: async (req, res, next) => {
@@ -41,6 +42,27 @@ module.exports = {
           result: {},
         });
       }
+      const foundItem = await LastActivity.findOne({
+        where: {
+          userId: decoded.id,
+        },
+      });
+      if (!foundItem) {
+        // Item not found, create a new one ( update lastAcitivyt time_login  )
+        const item = await LastActivity.create({
+          userId: user.id,
+          time_login: Date(),
+        });
+      }
+      // Found an item, update lastActivity time_login
+      const item = await LastActivity.update(
+        { time_login: Date() },
+        {
+          where: {
+            userId: user.id,
+          },
+        }
+      );
 
       req.user = {
         id: user.id,
