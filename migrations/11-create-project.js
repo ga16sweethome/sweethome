@@ -14,9 +14,11 @@ module.exports = {
       },
       appointmentId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
       userId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
       uploadReceipt: {
         type: Sequelize.STRING,
@@ -38,12 +40,15 @@ module.exports = {
       },
       totalPrice: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
       totalArea: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
       totalDuration: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
 
       completedAt: {
