@@ -91,7 +91,7 @@ module.exports = {
       let str = "" + create.id;
       let pad = "0000";
       let ans = pad.substring(0, pad.length - str.length) + str;
-      let code = "A#-" + ans;
+      let code = "#A-" + ans;
       await Appointment.update({ code }, { where: { id: create.id } });
 
       await LastActivity.update(
