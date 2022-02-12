@@ -366,7 +366,135 @@ module.exports = {
         ],
       });
 
-      const jumlahPage = Math.ceil(data.length / 8);
+      let hitung = await Showcase.findAll({
+        where: {
+          is_shown: true,
+          ...keywordsQuery,
+        },
+        attributes: {
+          exclude: [
+            ,
+            "updatedAt",
+            "showcaseId",
+            "projectId",
+            "createdBy",
+            "showcaseTypeId",
+            "is_shown",
+          ],
+        },
+        order: [["id", "ASC"]],
+        include: [
+          {
+            model: Gallery,
+            as: "gallery",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "showcaseId"],
+            },
+          },
+          {
+            model: ShowcaseJunkSection,
+            as: "showcaseJunkSection",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
+            },
+            include: [
+              {
+                model: Section,
+                as: "section",
+                where: {},
+                attributes: {
+                  exclude: ["createdAt", "updatedAt", "id"],
+                },
+              },
+            ],
+          },
+          {
+            model: ShowcaseJunkProjectType,
+            as: "showcaseJunkProjectType",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
+            },
+            include: [
+              {
+                model: ProjectType,
+                as: "projectType",
+                attributes: {
+                  exclude: ["createdAt", "updatedAt", "id"],
+                },
+              },
+            ],
+          },
+          {
+            model: ShowcaseJunkStyle,
+            as: "showcaseJunkstyle",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
+            },
+            include: [
+              {
+                model: Style,
+                as: "style",
+                attributes: {
+                  exclude: ["createdAt", "updatedAt", "id"],
+                },
+                where: {
+                  name: {
+                    [Op.or]: isiStyle,
+                  },
+                },
+              },
+            ],
+          },
+          {
+            model: Project,
+            as: "project",
+
+            attributes: {
+              exclude: [
+                "id",
+                "createdAt",
+                "updatedAt",
+                "showcaseId",
+                "code",
+                "userId",
+                "uploadReceipt",
+                "noteUploadReceipt",
+                "requestCancel",
+                "reasonCancel",
+                "confirmPayment",
+                "status",
+                "completedAt",
+              ],
+            },
+            include: [
+              {
+                model: Appointment,
+                as: "appointment",
+                attributes: {
+                  exclude: [
+                    "createdAt",
+                    "updatedAt",
+                    "id",
+                    "code",
+                    "userId",
+                    "buildingTypeId",
+                    "serviceTypeId",
+                    "estimateTime",
+                    "budget",
+                    "note",
+                    "timeslotId",
+                    "appointmentDate",
+                    "status",
+                    "completedAt",
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      const jumlahPage = Math.ceil(hitung.length / 8);
       console.log(data.length, jumlahPage);
       data = JSON.parse(JSON.stringify(data));
 
