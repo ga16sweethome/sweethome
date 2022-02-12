@@ -49,8 +49,8 @@ module.exports = {
       });
       if (!foundItem) {
         // Item not found, create a new one ( update lastAcitivyt time_login  )
-        const item = await User.create({
-          userId: decoded.id,
+        const item = await LastActivity.create({
+          userId: user.id,
           time_login: Date(),
         });
       }
