@@ -29,7 +29,9 @@ module.exports = {
 
       if (token) {
         token = token.replace("Bearer ", "");
+       
         const decoded = verifyToken(token);
+
         if (decoded) {
           const user = await User.findOne({
             where: {
