@@ -1,10 +1,16 @@
 // const express = require("express");
-const router = require("express").Router()
-const { getOne, register, login } = require("../controllers/user")
-const {  isAdmin } = require("../middlewares/userAuth")
+const router = require("express").Router();
+const {
+  getOne,
+  register,
+  login,
+  updateProfile,
+} = require("../controllers/user");
+const { isLogin } = require("../middlewares/userAuth");
+const { uploadCloudinary } = require("../middlewares/uploadFile");
 
-router.get("/", isAdmin,getOne)
-router.post("/register", register)
-router.post("/login", login)
-
-module.exports = router
+router.get("/", isLogin, getOne);
+router.post("/register", register);
+router.post("/login", login);
+router.post("/profile", isLogin, uploadCloudinary("picture"), updateProfile); //update profiles
+module.exports = router;

@@ -16,6 +16,8 @@ module.exports = {
         id: data.id,
         name: data.name,
         email: data.email,
+        phone: data.phone,
+        picture: data.picture,
       };
 
       res.status(200).json(result);
@@ -130,6 +132,74 @@ module.exports = {
         status: "Success",
         message: "Logged in successfully",
         result: { token },
+      });
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
+  updateProfile: async (req, res) => {
+    const body = req.body;
+    const file = req.file;
+    const id = req.user.id;
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: "Please Insert an Image file",
+        });
+      }
+      // schema mengisi validasi object sbb
+
+      const schema = Joi.object({
+        phone: Joi.string(),
+        picture: Joi.string(),
+      });
+
+      const { error } = schema.validate({
+        ...body,
+        picture: file.path,
+      });
+      if (error) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: error.message,
+        });
+      }
+
+      const update = await User.update(
+        {
+          ...body,
+          picture: file.path,
+          phone: body.phone,
+        },
+        { where: { id } }
+      );
+      if (!update) {
+        return res.status(400).json({
+          status: "Failed",
+          message: "Failed To Upload Picture",
+        });
+      }
+      const cari = await User.findOne({
+        where: { id },
+        attributes: {
+          exclude: [
+            "id",
+            "createdAt",
+            "updatedAt",
+            "is_admin",
+            "password",
+            "createdAt",
+            "updatedAt",
+            "email",
+          ],
+        },
+      });
+
+      res.status(201).json({
+        status: "Success",
+        message: "Successfully Update Profile",
+        result: cari,
       });
     } catch (error) {
       errorHandler(res, error);
