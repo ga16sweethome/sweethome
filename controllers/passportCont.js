@@ -1,8 +1,9 @@
 const joi = require("joi");
 const {User} = require("../models");
-// const {hashPassword, comparePassword} = require("../helpers/bcrypt");
+const {hashPassword, comparePassword} = require("../helpers/bcrypt");
 const {generateToken} = require("../helpers/jwt");
 const passport = require("passport")
+const errorHandler = require("../helpers/error-handler")
 
 module.exports = {
 googleCallback : async (req,res) => {
@@ -46,7 +47,7 @@ googleCallback : async (req,res) => {
         id: profile.id,
         email: profile.email,
       });
-      res.redirect("/api/v1/home" + token)
+      res.redirect("/api/v1/user" + token)
     } catch (error) {
       
       errorHandler (res,error)
