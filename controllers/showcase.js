@@ -219,8 +219,6 @@ module.exports = {
       if (section) {
         isiSection = section.split(",");
       }
-      let querySection;
-      querySection = { name: { [Op.ne]: isiSection } };
 
       let isiStyle = [];
       if (styles) {
@@ -273,7 +271,11 @@ module.exports = {
               {
                 model: Section,
                 as: "section",
-                where: {},
+                where: {
+                  name: {
+                    [Op.or]: isiSection,
+                  },
+                },
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "id"],
                 },
@@ -367,6 +369,7 @@ module.exports = {
       });
 
       let hitung = await Showcase.findAll({
+        limit: 999,
         where: {
           is_shown: true,
           ...keywordsQuery,
@@ -401,7 +404,11 @@ module.exports = {
               {
                 model: Section,
                 as: "section",
-                where: {},
+                where: {
+                  name: {
+                    [Op.or]: isiSection,
+                  },
+                },
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "id"],
                 },
@@ -493,7 +500,8 @@ module.exports = {
           },
         ],
       });
-
+      hitung = JSON.parse(JSON.stringify(hitung));
+      console.log(hitung);
       const jumlahPage = Math.ceil(hitung.length / 8);
       console.log(data.length, jumlahPage);
       data = JSON.parse(JSON.stringify(data));

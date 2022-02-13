@@ -1,4 +1,10 @@
-const { User, Appointment } = require("../models");
+const {
+  User,
+  Gallery,
+  Showcase,
+  ShowcaseJunkSection,
+  Section,
+} = require("../models");
 const errorHandler = require("../helpers/error-handler");
 const Joi = require("joi"); //use joi validation NPM
 const {
@@ -7,6 +13,7 @@ const {
   validatePassword,
 } = require("../helpers/bcrypt");
 const { generateToken } = require("../helpers/jwt");
+const { Op } = require("sequelize"); //use Op from Sequelize
 
 module.exports = {
   getOne: async (req, res) => {
@@ -201,6 +208,66 @@ module.exports = {
         message: "Successfully Update Profile",
         result: cari,
       });
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
+  getPicture: async (req, res) => {
+    const { section } = req.query;
+    try {
+      let isiSection = "";
+      if (section) {
+        isiSection = {
+          name: section,
+        };
+      }
+
+      const data = await Showcase.findAll({
+        where: {
+          is_shown: true,
+        },
+        attributes: {
+          exclude: [
+            ,
+            "updatedAt",
+            "showcaseId",
+            "projectId",
+            "createdBy",
+            "showcaseTypeId",
+            "is_shown",
+            "createdAt",
+          ],
+        },
+        include: [
+          {
+            model: Gallery,
+            as: "gallery",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "showcaseId"],
+            },
+          },
+          {
+            model: ShowcaseJunkSection,
+            as: "showcaseJunkSection",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
+            },
+            include: [
+              {
+                model: Section,
+                as: "section",
+                attributes: {
+                  exclude: ["createdAt", "updatedAt", "id"],
+                },
+                where: isiSection,
+              },
+            ],
+          },
+        ],
+      });
+      let x = Math.floor(Math.random() * (data.length + 1));
+      console.log(x);
+      res.status(200).json(data[x]);
     } catch (error) {
       errorHandler(res, error);
     }
