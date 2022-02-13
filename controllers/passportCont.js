@@ -9,9 +9,8 @@ module.exports = {
 
     let user;
     try {
-      console.log(req.user._json);
       user = await User.findOne({ where: { email: profile.email } });
-      console.log(user);
+
       if (!user) {
         user = await User.create({
           email: profile.email,
@@ -25,7 +24,7 @@ module.exports = {
         id: profile.id,
         email: profile.email,
       });
-      res.redirect("/api/v1/" + token); //fe yang ngurus mau redirect kemana
+      res.redirect("/api/v1/user/" + token); // untuk success redirect
     } catch (error) {
       errorHandler(res, error);
     }
