@@ -29,9 +29,9 @@ module.exports = {
             }
             const result =  timeslot.map( (el, i) => {
                 if (arr[i] < quota[i]) {
-                    el.slot = "READY"
+                    el.isFull = false
                 } else {
-                    el.slot = "FULL"
+                    el.isFull = true
                 }
                 return el
             })
