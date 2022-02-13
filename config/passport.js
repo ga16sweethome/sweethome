@@ -15,7 +15,7 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL:
-        "https://sweethome-app-api.herokuapp.com/api/v1/user/google/callback",
+        "https://thesweethome.netlify.app/api/v1/user/google/callback",
     },
     function (accessToken, refreshToken, profile, cb) {
       // User.findOrCreate({ googleId: profile.id }, function (err, user) {
