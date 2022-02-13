@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const express = require("express");
 const router = express.Router();
 const homepage = require("./homepage");
@@ -9,13 +8,6 @@ const timeslot = require("./timeslot");
 const project = require("./project");
 const favorite = require("./favorite");
 const appointment = require("./appointment");
-=======
-const express = require("express")
-const router = express.Router()
-const showcase = require("./showcase")
-const appointment = require("./appointment")
-const user = require('./user')
->>>>>>> features/mvp/oauth
 
 router.use("/homepage", homepage);
 router.use("/user", user);
