@@ -6,6 +6,7 @@ const errorHandler = require("../helpers/error-handler");
 module.exports = {
   googleCallback: async (req, res) => {
     const profile = req.user._json;
+
     let user;
     try {
       console.log(req.user._json);

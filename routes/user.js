@@ -4,12 +4,10 @@ const {
   register,
   login,
   updateProfile,
-  getPicture,
 } = require("../controllers/user");
 const { isLogin } = require("../middlewares/userAuth");
 const { uploadCloudinary } = require("../middlewares/uploadFile");
 const passport = require("../config/passport");
-
 const {
   facebookCallback,
   googleCallback,
@@ -20,7 +18,6 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/profile", isLogin, uploadCloudinary("picture"), updateProfile); //update profiles
 
-
 router.get(
   "/facebook",
   passport.authenticate("facebook", { scope: ["email"] })
@@ -28,7 +25,7 @@ router.get(
 router.get(
   "/facebook/callback",
   passport.authenticate("facebook", {
-    failureRedirect: "https://localhost:3000/api/v1/facebook",
+    failureRedirect: "https://thesweethome.netlify.app/",
   }),
   facebookCallback
 );
@@ -39,7 +36,9 @@ router.get(
 );
 router.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/api/v1/auth/google" }),
+  passport.authenticate("google", {
+    failureRedirect: "https://thesweethome.netlify.app/",
+  }),
   googleCallback
 );
 

@@ -219,8 +219,6 @@ module.exports = {
       if (section) {
         isiSection = section.split(",");
       }
-      let querySection;
-      querySection = { name: { [Op.ne]: isiSection } };
 
       let isiStyle = [];
       if (styles) {
