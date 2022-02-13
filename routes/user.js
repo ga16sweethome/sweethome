@@ -9,6 +9,7 @@ const {
 const { isLogin } = require("../middlewares/userAuth");
 const { uploadCloudinary } = require("../middlewares/uploadFile");
 const passport = require("../config/passport");
+
 const {
   facebookCallback,
   googleCallback,
@@ -18,7 +19,7 @@ router.get("/", isLogin, getOne);
 router.post("/register", register);
 router.post("/login", login);
 router.post("/profile", isLogin, uploadCloudinary("picture"), updateProfile); //update profiles
-router.get("/gallery", getPicture);
+
 
 router.get(
   "/facebook",
