@@ -24,7 +24,7 @@ module.exports = {
         id: profile.id,
         email: profile.email,
       });
-      res.redirect("/api/v1/user/" + token); // untuk success redirect
+      res.redirect("/api/v1" + token); // untuk success redirect
     } catch (error) {
       errorHandler(res, error);
     }
