@@ -17,17 +17,18 @@ const { Op } = require("sequelize"); //use Op from Sequelize
 
 module.exports = {
   getOne: async (req, res) => {
+    const data = req.user;
     try {
-      const data = req.user;
-      const result = {
-        id: data.id,
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        picture: data.picture,
-      };
+      const find = await User.findAll({
+        where: {
+          id: data.id,
+        },
+        attributes: {
+          exclude: ["id", "createdAt", "updatedAt", "is_admin", "password"],
+        },
+      });
 
-      res.status(200).json(result);
+      res.status(200).json(find);
     } catch (error) {
       errorHandler(res, error);
     }
