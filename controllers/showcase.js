@@ -271,6 +271,7 @@ module.exports = {
               {
                 model: Section,
                 as: "section",
+                required: true,
                 where: {
                   name: {
                     [Op.or]: isiSection,
@@ -308,6 +309,7 @@ module.exports = {
               {
                 model: Style,
                 as: "style",
+                required: true,
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "id"],
                 },

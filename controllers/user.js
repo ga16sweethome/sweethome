@@ -222,6 +222,7 @@ module.exports = {
         };
       }
 
+      console.log(isiSection);
       const data = await Showcase.findAll({
         where: {
           is_shown: true,
@@ -248,6 +249,7 @@ module.exports = {
           },
           {
             model: ShowcaseJunkSection,
+            required: true,
             as: "showcaseJunkSection",
             attributes: {
               exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
@@ -265,9 +267,11 @@ module.exports = {
           },
         ],
       });
-      let x = Math.floor(Math.random() * (data.length + 1));
-      console.log(x);
-      res.status(200).json(data[x]);
+      // let x = Math.floor(Math.random() * (data.length + 1));
+      // console.log(x);
+      // res.status(200).json(data[x]);
+      console.log(data.length);
+      res.status(200).json(data);
     } catch (error) {
       errorHandler(res, error);
     }
