@@ -271,6 +271,7 @@ module.exports = {
               {
                 model: Section,
                 as: "section",
+                required: true,
                 where: {
                   name: {
                     [Op.or]: isiSection,
@@ -308,6 +309,7 @@ module.exports = {
               {
                 model: Style,
                 as: "style",
+                required: true,
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "id"],
                 },
@@ -441,6 +443,7 @@ module.exports = {
               {
                 model: Style,
                 as: "style",
+                required: true,
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "id"],
                 },
@@ -501,9 +504,9 @@ module.exports = {
         ],
       });
       hitung = JSON.parse(JSON.stringify(hitung));
-      console.log(hitung);
+
       const jumlahPage = Math.ceil(hitung.length / 8);
-      console.log(data.length, jumlahPage);
+
       data = JSON.parse(JSON.stringify(data));
 
       let isi = [];
