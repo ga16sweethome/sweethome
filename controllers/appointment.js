@@ -64,16 +64,28 @@ module.exports = {
       const buildingType = await BuildingType.findOne({
         where: { name: body.buildingType },
       });
+
       const serviceType = await ServiceType.findOne({
         where: { name: body.serviceType },
       });
-
+      
       const timeslot = await Timeslot.findOne({
         where: {
           time: body.time,
           serviceTypeId: serviceType.id,
         },
       });
+      
+      const doubleAppointment = await Appointment.findOne({
+        where: {
+          appointmentDate: body.date,
+          timeslotId: timeslot.id
+        }
+      })
+      if (doubleAppointment) return res.status(401).json({
+        status: "Failed Create Appointment",
+        message: "Can't Create Appointment Same Date & Time",
+      })
 
       const create = await Appointment.create({
         userId: user.id,

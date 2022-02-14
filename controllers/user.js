@@ -62,7 +62,6 @@ module.exports = {
       }
 
       const check = await User.findOne({ where: { email } });
-      console.log(check);
       if (check) {
         return res.status(401).json({
           status: "Failed",
@@ -82,9 +81,19 @@ module.exports = {
           message: "Failed to register",
         });
       }
+
+      const token = generateToken({
+        id: data.id,
+        email: data.email,
+        name: `${data.firstName} ${data.lastName}`,
+        picture: data.picture,
+        phone: data.phone,
+        is_admin: false,
+      });
+
       return res.status(201).json({
-        msg: `Registrasi Berhasil`,
-        result: "You can login now",
+        msg: `Registrasi Success`,
+        result: { token },
       });
     } catch (error) {
       errorHandler(res, error);
