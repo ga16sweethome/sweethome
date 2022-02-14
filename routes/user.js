@@ -37,7 +37,7 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "https://thesweethome.netlify.app/",
+    failureRedirect: "https://thesweethome.netlify.app/login", //rediredct ke fe
   }),
   googleCallback
 );
