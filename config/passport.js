@@ -18,13 +18,7 @@ passport.use(
         "https://sweethome-app-api.herokuapp.com/api/v1/user/google/callback", //callback be
     },
     function (accessToken, refreshToken, profile, cb) {
-      // User.findOrCreate({ googleId: profile.id }, function (err, user) {
       return cb(null, profile);
-      if (err) {
-        console.log(err);
-      }
-
-      // });
     }
   )
 );
@@ -38,9 +32,7 @@ passport.use(
         "https://sweethome-app-api.herokuapp.com/api/v1/user/facebook/callback",
     },
     function (accessToken, refreshToken, profile, cb) {
-      // User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-      return cb(err, home);
-      // });
+      return cb(null, profile);
     }
   )
 );

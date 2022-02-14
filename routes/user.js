@@ -25,7 +25,7 @@ router.get(
 router.get(
   "/facebook/callback",
   passport.authenticate("facebook", {
-    failureRedirect: "https://thesweethome.netlify.app/",
+    failureRedirect: "https://thesweethome.netlify.app/login",
   }),
   facebookCallback
 );

@@ -36,12 +36,11 @@ module.exports = {
     const profile = req.user._json;
     let user;
     try {
-      console.log(req.user._json);
-      user = await User.findOne({ where: { email: profile.email } });
+      user = await User.findOne({ where: { email: profile.id } });
       console.log(user);
       if (!user) {
         user = await User.create({
-          email: profile.email,
+          email: profile.id,
           firstName: profile.given_name,
           lastName: "",
           password: "",
@@ -52,7 +51,9 @@ module.exports = {
         id: profile.id,
         email: profile.email,
       });
-      res.redirect("/api/v1/user" + token);
+      res.redirect(
+        "https://thesweethome.netlify.app/authenticate?token=" + token
+      );
     } catch (error) {
       errorHandler(res, error);
     }
