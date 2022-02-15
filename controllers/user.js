@@ -232,7 +232,6 @@ module.exports = {
         };
       }
 
-      console.log(isiSection);
       const data = await Showcase.findAll({
         where: {
           is_shown: true,
@@ -277,11 +276,11 @@ module.exports = {
           },
         ],
       });
-      // let x = Math.floor(Math.random() * (data.length + 1));
-      // console.log(x);
-      // res.status(200).json(data[x]);
-      console.log(data.length);
-      res.status(200).json(data);
+      let x = Math.floor(Math.random() * data.length);
+      console.log(x);
+      res.status(200).json(data[x]);
+      // console.log(data.length);
+      // res.status(200).json(data);
     } catch (error) {
       errorHandler(res, error);
     }
