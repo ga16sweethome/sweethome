@@ -1,11 +1,13 @@
-const { date } = require("joi");
+// const { date } = require("joi");
 const errorHandler = require("../helpers/error-handler");
 
 const {
   Appointment,
-  ServiceType,
-  AppointmentJunkSection,
+  Style,
+  AppointmentJunkStyle,
   Section,
+  AppointmentJunkSection,
+  Project,
 } = require("../models");
 const { Op } = require("sequelize"); //use Op from Sequelize
 const moment = require("moment"); //use moment npm
@@ -13,47 +15,61 @@ const moment = require("moment"); //use moment npm
 module.exports = {
   getAllAppointment: async (req, res) => {
     try {
-      let data = await Appointment.findAll({
-        include: {
-          model: AppointmentJunkSection,
-          as: "appointmentJunkSection",
-          include: [
-            {
-              model: Section,
-              as: "section",
-            },
-          ],
+      let start = moment().tz("UTC").startOf("days").toDate();
+      let end = moment().tz("UTC").endOf("days").add(1, "days").toDate();
+      let TODAY = moment(new Date()).format("YYYY-MM-DD");
+      let besok = moment(new Date()).add(1, "days").format("YYYY-MM-DD");
+      let lusa = moment(new Date()).add(2, "days").format("YYYY-MM-DD");
+
+      let cari = await Appointment.findAll({
+        where: {
+          appointmentDate: {
+            [Op.between]: [start, end],
+          },
         },
+        attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+        include: [
+          {
+            model: AppointmentJunkSection,
+            as: "appointmentJunkSection",
+            attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+            include: [
+              {
+                model: Section,
+                as: "section",
+                attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+              },
+            ],
+          },
+          {
+            model: AppointmentJunkStyle,
+            as: "appointmentJunkStyle",
+            attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+            include: [
+              {
+                model: Style,
+                as: "style",
+                attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+              },
+            ],
+          },
+        ],
       });
-      data = JSON.parse(JSON.stringify(data));
-      const cariBulan = moment(new Date()).format("YYYY-MM-DD");
-      // const bulan = cariBulan.split("-")[1];
-      const bulan = "01";
-      const dataBulanIni = data.filter(
-        (e) => e.appointmentDate.split("-")[1] === bulan
-      );
-      const totalData = dataBulanIni.length;
-      const dataReject = dataBulanIni.filter((e) => e.status === -1);
-      const dataScheduled = dataBulanIni.filter((e) => e.status === -2);
-      const dataDone = dataBulanIni.filter((e) => e.status === 3);
-      const dataWait = dataBulanIni.filter((e) => e.status === 1);
-      // console.log(
-      //   dataReject.length,
-      //   dataScheduled.length,
-      //   dataDone.length,
-      //   dataWait.length
-      // );
-      let dataAppointment = {
-        AppointmentRejected: dataReject.length,
-        AppointmentScheduled: dataScheduled.length,
-        AppointmentDone: dataDone.length,
-        AppointmentWait: dataWait.length,
-      };
+
+      cari = JSON.parse(JSON.stringify(cari));
+
+      const dataTODAY = cari.filter((e) => e.appointmentDate === TODAY);
+      const databesok = cari.filter((e) => e.appointmentDate === besok);
+      const datalusa = cari.filter((e) => e.appointmentDate === lusa);
+
+      databesok.slice(1, 6); //untuk ngambil 5 data untuk ditampilkan
+      dataTODAY.slice(1, 6); //untuk ngambil 5 data untuk ditampilkan
+      datalusa.slice(1, 6); //untuk ngambil 5 data untuk ditampilkan
 
       res.status(200).json({
         status: "Succes",
         message: "Successfully retrieve the data",
-        result: { dataAppointment },
+        result: { dataTODAY, databesok, datalusa },
       });
     } catch (error) {
       errorHandler(res, error);
@@ -61,10 +77,33 @@ module.exports = {
   },
   getAllCountAppointment: async (req, res) => {
     try {
+      let start = moment().tz("UTC").startOf("month").toDate();
+      let end = moment().tz("UTC").endOf("month").toDate();
+
+      let cari = await Appointment.findAll({
+        where: {
+          appointmentDate: {
+            [Op.between]: [start, end],
+          },
+        },
+      });
+
+      cari = JSON.parse(JSON.stringify(cari));
+      const dataCancel = cari.filter((e) => e.status === -1);
+      const dataScheduled = cari.filter((e) => e.status === 2);
+      const dataDone = cari.filter((e) => e.status === 3);
+      const dataWaitingApproval = cari.filter((e) => e.status === 1);
+      let TotalAppointment = {
+        Appointment: cari.length,
+        AppointmentRejected: dataCancel.length,
+        AppointmentScheduled: dataScheduled.length,
+        AppointmentDone: dataDone.length,
+        AppointmentWait: dataWaitingApproval.length,
+      };
       res.status(200).json({
         status: "Succes",
         message: "Successfully retrieve the data",
-        result: {},
+        result: TotalAppointment,
       });
     } catch (error) {
       errorHandler(res, error);
@@ -72,13 +111,33 @@ module.exports = {
   },
   getAllCountProject: async (req, res) => {
     try {
-      const datae = moment(new Date()).format("YYYY-MM-DD");
-      const baru = datae.split("-")[1];
-      console.log(baru);
-      return res.status(200).json({
+      let start = moment().tz("UTC").startOf("month").toDate();
+      let end = moment().tz("UTC").endOf("month").toDate();
+
+      let cari = await Project.findAll({
+        where: {
+          completedAt: {
+            [Op.between]: [start, end],
+          },
+        },
+      });
+
+      cari = JSON.parse(JSON.stringify(cari));
+      const dataCancel = cari.filter((e) => e.status === -1);
+      const dataOnGoing = cari.filter((e) => e.status === 2);
+      const dataCompleted = cari.filter((e) => e.status === 3);
+      const dataWaitingPayment = cari.filter((e) => e.status === 1);
+      let TotalProject = {
+        Project: cari.length,
+        ProjectCancel: dataCancel.length,
+        ProjectOnGoing: dataOnGoing.length,
+        ProjectCompleted: dataCompleted.length,
+        ProjectWaitingPayment: dataWaitingPayment.length,
+      };
+      res.status(200).json({
         status: "Succes",
         message: "Successfully retrieve the data",
-        result: {},
+        result: TotalProject,
       });
     } catch (error) {
       errorHandler(res, error);

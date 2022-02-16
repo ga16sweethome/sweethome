@@ -224,6 +224,7 @@ module.exports = {
       if (styles) {
         isiStyle = styles.split(",");
       }
+      console.log(isiSection, isiStyle);
 
       let keywordsQuery = {};
       if (keywords) {
@@ -272,11 +273,12 @@ module.exports = {
                 model: Section,
                 as: "section",
                 required: true,
-                where: {
-                  name: {
-                    [Op.or]: isiSection,
-                  },
-                },
+                where:
+                  isiSection.length > 0
+                    ? {
+                        name: isiSection,
+                      }
+                    : {},
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "id"],
                 },
@@ -313,11 +315,12 @@ module.exports = {
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "id"],
                 },
-                where: {
-                  name: {
-                    [Op.or]: isiStyle,
-                  },
-                },
+                where:
+                  isiStyle.length > 0
+                    ? {
+                        name: isiStyle,
+                      }
+                    : {},
               },
             ],
           },
@@ -370,8 +373,8 @@ module.exports = {
         ],
       });
 
-      let hitung = await Showcase.findAll({
-        limit: 999,
+      let hitung = await Showcase.count({
+        distinct: true,
         where: {
           is_shown: true,
           ...keywordsQuery,
@@ -399,6 +402,7 @@ module.exports = {
           {
             model: ShowcaseJunkSection,
             as: "showcaseJunkSection",
+            required : true,
             attributes: {
               exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
             },
@@ -406,11 +410,13 @@ module.exports = {
               {
                 model: Section,
                 as: "section",
-                where: {
-                  name: {
-                    [Op.or]: isiSection,
-                  },
-                },
+                required: true,
+                where:
+                  isiSection.length > 0
+                    ? {
+                        name: isiSection,
+                      }
+                    : {},
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "id"],
                 },
@@ -436,6 +442,7 @@ module.exports = {
           {
             model: ShowcaseJunkStyle,
             as: "showcaseJunkstyle",
+            required : true,
             attributes: {
               exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
             },
@@ -447,11 +454,12 @@ module.exports = {
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "id"],
                 },
-                where: {
-                  name: {
-                    [Op.or]: isiStyle,
-                  },
-                },
+                where:
+                  isiStyle.length > 0
+                    ? {
+                        name: isiStyle,
+                      }
+                    : {},
               },
             ],
           },
@@ -503,9 +511,7 @@ module.exports = {
           },
         ],
       });
-      hitung = JSON.parse(JSON.stringify(hitung));
-
-      const jumlahPage = Math.ceil(hitung.length / 8);
+      const jumlahPage = Math.ceil(hitung / 8);
 
       data = JSON.parse(JSON.stringify(data));
 

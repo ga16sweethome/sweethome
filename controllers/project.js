@@ -1,5 +1,6 @@
 const {
   Project,
+  User,
   Appointment,
   Timeslot,
   BuildingType,
@@ -10,6 +11,7 @@ const {
 const errorHandler = require("../helpers/error-handler");
 const Joi = require("joi");
 const { Op } = require("sequelize");
+const user = require("./user");
 
 module.exports = {
   getAllProjectByUser: async (req, res) => {
@@ -216,6 +218,49 @@ module.exports = {
       res.status(200).json({
         status: "Success",
         message: "Successfully Cancel Project",
+      });
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
+  getAllProjectByAdmin: async (req, res) => {
+    // const { id } = req.user; //klo udah isAdmin
+    try {
+      const cari = await Project.findAll({
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: {
+              exclude: [
+                "id",
+                "createdAt",
+                "updatedAt",
+                "password",
+                "is_admin",
+                "phone",
+              ],
+            },
+          },
+          {
+            model: ProjectDetail,
+            as: "projectDetail",
+            include: [
+              {
+                model: Section,
+                as: "section",
+              },
+              {
+                model: ProjectType,
+                as: "projectType",
+              },
+            ],
+          },
+        ],
+      });
+
+      res.status(200).json({
+        result: cari,
       });
     } catch (error) {
       errorHandler(res, error);

@@ -3,10 +3,11 @@ const {
   getAllCountAppointment,
   getAllCountProject,
 } = require("../controllers/overview");
+const { isAdmin } = require("../middlewares/userAuth");
 
 const router = require("express").Router();
 
-router.get("/", getAllAppointment);
-router.get("/appointment", getAllCountAppointment);
-router.get("/project", getAllCountProject);
+router.get("/", isAdmin, getAllAppointment);
+router.get("/appointment", isAdmin, getAllCountAppointment);
+router.get("/project", isAdmin, getAllCountProject);
 module.exports = router;
