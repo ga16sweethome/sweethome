@@ -1,11 +1,11 @@
 const {
   ShowcaseJunkSection,
+  ProjectDetail,
   Favorite,
   Showcase,
   ShowcaseType,
   Project,
   Appointment,
-  ProjectDetail,
   ServiceType,
   Section,
   BuildingType,
@@ -20,6 +20,9 @@ const errorHandler = require("../helpers/error-handler");
 const { Op } = require("sequelize"); //use Op from Sequelize
 const appointment = require("./appointment");
 const { verifyToken } = require("../helpers/jwt");
+const Joi = require("joi");
+const { create } = require("./appointment");
+const gallery = require("../models/gallery");
 
 module.exports = {
   getOneShowcase: async (req, res) => {
@@ -224,7 +227,6 @@ module.exports = {
       if (styles) {
         isiStyle = styles.split(",");
       }
-      console.log(isiSection, isiStyle);
 
       let keywordsQuery = {};
       if (keywords) {
@@ -402,7 +404,7 @@ module.exports = {
           {
             model: ShowcaseJunkSection,
             as: "showcaseJunkSection",
-            required : true,
+            required: true,
             attributes: {
               exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
             },
@@ -442,7 +444,7 @@ module.exports = {
           {
             model: ShowcaseJunkStyle,
             as: "showcaseJunkstyle",
-            required : true,
+            required: true,
             attributes: {
               exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
             },
@@ -541,6 +543,353 @@ module.exports = {
       }
 
       res.status(200).json({ data, jumlahPage });
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
+
+  getAllShowcaseAdmin: async (req, res) => {
+    try {
+      const cari = await Showcase.findAll({
+        include: [{ model: ShowcaseType, as: "showcaseType" }],
+      });
+      res.status(200).json({
+        status: "Succes",
+        message: "Successfully retrieve the data",
+        result: cari,
+      });
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
+  createCompletedProject: async (req, res) => {
+    const body = req.body;
+    const user = req.user;
+    try {
+      //create schema for Joi validate
+      const schema = Joi.object({
+        projectId: Joi.number().required(),
+        projectCode: Joi.string().required(),
+        projectUserName: Joi.string().required(),
+        projectUserPhone: Joi.string().required(),
+        projectUserEmail: Joi.string().email().required(),
+        projectTotalPrice: Joi.number().required(),
+        projectTotalDuration: Joi.number().required(),
+        projectAppointmentAddress: Joi.string().required(),
+        projectAppointmentCode: Joi.number().required(),
+        name: Joi.string().required(),
+        projectType: Joi.array().required().items(Joi.string()),
+        styles: Joi.array().required().items(Joi.string()),
+        picture: Joi.array().required().items({
+          title: Joi.string().required(),
+          picture: Joi.string().required(),
+        }),
+      });
+      //validate input with Joi
+      const { error } = schema.validate({
+        ...body,
+      });
+      if (error) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: error.message,
+        });
+      }
+
+      const createShowcase = await Showcase.create({
+        name: body.name,
+        showcaseTypeId: 1,
+        projectId: body.projectId,
+        createdBy: user.id,
+        is_shown: false,
+      });
+      const queryP = body.projectType;
+      const queryS = body.styles;
+
+      const pType = await ProjectType.findAll({ where: { name: queryP } });
+      const pTypeId = pType.map((el) => el.id);
+      const style = await Style.findAll({ where: { name: queryS } });
+      const styleId = style.map((el) => el.id);
+
+      const PTypeJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkProjectType
+      for (let i = 0; i < pTypeId.length; i++) {
+        PTypeJunk.push({
+          showcaseId: createShowcase.id,
+          projectTypeId: pTypeId[i],
+        });
+      }
+      await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
+
+      const StyleJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkStyle
+      for (let i = 0; i < styleId.length; i++) {
+        StyleJunk.push({
+          showcaseId: createShowcase.id,
+          styleId: styleId[i],
+        });
+      }
+      await ShowcaseJunkStyle.bulkCreate(StyleJunk);
+
+      const PGallery = []; //untuk bulcreate ( array ) ke database Gallery
+
+      for (let i = 0; i < body.picture.length; i++) {
+        PGallery.push({
+          showcaseId: createShowcase.id,
+          title: body.picture[i].title,
+          picture: body.picture[i].picture,
+        });
+      }
+
+      await Gallery.bulkCreate(PGallery);
+      const result = await Showcase.findAll({
+        where: {
+          id: createShowcase.id,
+        },
+        include: [
+          {
+            model: Gallery,
+            as: "gallery",
+          },
+          {
+            model: ShowcaseJunkProjectType,
+            as: "showcaseJunkProjectType",
+            include: [
+              {
+                model: ProjectType,
+                as: "projectType",
+              },
+            ],
+          },
+          {
+            model: ShowcaseJunkStyle,
+            as: "showcaseJunkstyle",
+            include: [
+              {
+                model: Style,
+                as: "style",
+              },
+            ],
+          },
+        ],
+      });
+      res.status(200).json({
+        status: "Succes",
+        message: "Successfully created Showcase Completed Project",
+        result: result,
+      });
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
+  createPortfolio: async (req, res) => {
+    const body = req.body;
+    const user = req.user;
+    try {
+      const schema = Joi.object({
+        //validate input with Joi
+        name: Joi.string().required(),
+        projectType: Joi.array().required().items(Joi.string()),
+        styles: Joi.array().required().items(Joi.string()),
+        picture: Joi.array().required().items({
+          title: Joi.string().required(),
+          picture: Joi.string().required(),
+        }),
+      });
+      const { error } = schema.validate({
+        ...body,
+      });
+      if (error) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: error.message,
+        });
+      }
+
+      const createShowcase = await Showcase.create({
+        name: body.name,
+        showcaseTypeId: 2,
+        createdBy: user.id,
+      });
+      const queryP = body.projectType;
+      const queryS = body.styles;
+
+      const pType = await ProjectType.findAll({ where: { name: queryP } });
+      const pTypeId = pType.map((el) => el.id);
+      const style = await Style.findAll({ where: { name: queryS } });
+      const styleId = style.map((el) => el.id);
+
+      const PTypeJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkProjectType
+      for (let i = 0; i < pTypeId.length; i++) {
+        PTypeJunk.push({
+          showcaseId: createShowcase.id,
+          projectTypeId: pTypeId[i],
+        });
+      }
+      await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
+
+      const StyleJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkStyle
+      for (let i = 0; i < styleId.length; i++) {
+        StyleJunk.push({
+          showcaseId: createShowcase.id,
+          styleId: styleId[i],
+        });
+      }
+      await ShowcaseJunkStyle.bulkCreate(StyleJunk);
+
+      const PGallery = []; //untuk bulcreate ( array ) ke database Gallery
+      for (let i = 0; i < body.picture.length; i++) {
+        PGallery.push({
+          showcaseId: createShowcase.id,
+          title: body.picture[i].title,
+          picture: body.picture[i].picture,
+        });
+      }
+      await Gallery.bulkCreate(PGallery);
+      
+      const result = await Showcase.findAll({
+        where: {
+          id: createShowcase.id,
+        },
+        include: [
+          {
+            model: Gallery,
+            as: "gallery",
+          },
+          {
+            model: ShowcaseJunkProjectType,
+            as: "showcaseJunkProjectType",
+            include: [
+              {
+                model: ProjectType,
+                as: "projectType",
+              },
+            ],
+          },
+          {
+            model: ShowcaseJunkStyle,
+            as: "showcaseJunkstyle",
+            include: [
+              {
+                model: Style,
+                as: "style",
+              },
+            ],
+          },
+        ],
+      });
+      res.status(200).json({
+        status: "Succes",
+        message: "Successfully created Showcase Protfolio",
+        result: result,
+      });
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
+  getDetailProjectByAdmin: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const cari = await Project.findByPk(id, {
+        include: [
+          {
+            model: ProjectDetail,
+            as: "projectDetail",
+            include: [
+              {
+                model: Section,
+                as: "section",
+              },
+              { model: ProjectType, as: "projectType" },
+            ],
+          },
+          {
+            model: Appointment,
+            as: "appointment",
+            include: [
+              {
+                model: User,
+                as: "user",
+                attributes: {
+                  exclude: ["id", "createdAt", "updatedAt", "password"],
+                },
+              },
+            ],
+          },
+        ],
+      });
+      res.status(200).json({
+        status: "",
+        message: "",
+        result: cari,
+      });
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
+  getListProject: async (req, res) => {
+    try {
+      let cari = await Project.findAll({
+        order: [["id", "ASC"]],
+        include: {
+          model: User,
+          as: "user",
+        },
+      });
+      cari = JSON.parse(JSON.stringify(cari));
+
+      let result = [];
+
+      for (let i = 0; i < cari.length; i++) {
+        result.push({
+          code: cari[i].code,
+          name: `${cari[i].user.firstName} ${cari[i].user.firstName}`,
+          id: cari[i].id,
+        });
+      }
+
+      res.status(200).json({
+        status: "Succes",
+        message: "Successfully retreive the data",
+        result: result,
+      });
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
+  shownShowcase: async (req, res) => {
+    const { user } = req;
+    const { id } = req.params;
+    const { is_shown } = req.body;
+    try {
+      const check = await Showcase.findByPk(id);
+      let visibility;
+      if (check.is_shown) {
+        visibility = false;
+      } else {
+        visibility = true;
+      }
+
+      const update = await Showcase.update(
+        { is_shown: visibility },
+        {
+          where: {
+            createdBy: user.id,
+            id,
+          },
+        }
+      );
+      if (!update[0]) {
+        return res.status(401).json({
+          status: "Unauthorized",
+          message: "Youre not allowed to update the data",
+          result: {},
+        });
+      }
+      let shown = { is_shown: visibility };
+      res.status(201).json({
+        status: "Succes",
+        message: "Successfully change the visibility",
+        result: { shown },
+      });
     } catch (error) {
       errorHandler(res, error);
     }
