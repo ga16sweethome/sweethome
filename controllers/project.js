@@ -223,47 +223,4 @@ module.exports = {
       errorHandler(res, error);
     }
   },
-  getAllProjectByAdmin: async (req, res) => {
-    // const { id } = req.user; //klo udah isAdmin
-    try {
-      const cari = await Project.findAll({
-        include: [
-          {
-            model: User,
-            as: "user",
-            attributes: {
-              exclude: [
-                "id",
-                "createdAt",
-                "updatedAt",
-                "password",
-                "is_admin",
-                "phone",
-              ],
-            },
-          },
-          {
-            model: ProjectDetail,
-            as: "projectDetail",
-            include: [
-              {
-                model: Section,
-                as: "section",
-              },
-              {
-                model: ProjectType,
-                as: "projectType",
-              },
-            ],
-          },
-        ],
-      });
-
-      res.status(200).json({
-        result: cari,
-      });
-    } catch (error) {
-      errorHandler(res, error);
-    }
-  },
 };

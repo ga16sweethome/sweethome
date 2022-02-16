@@ -17,5 +17,4 @@ router.post(
 );
 router.post("/requestcancel/:id", isLogin, requestCancelProject);
 
-router.get("/admin", getAllProjectByAdmin);
 module.exports = router;
