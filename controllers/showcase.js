@@ -862,6 +862,18 @@ module.exports = {
     try {
       const check = await Showcase.findByPk(id);
       let visibility;
+      const schema = Joi.object({
+        is_shown: Joi.boolean().required(),
+      });
+      const { error } = schema.validate({
+        is_shown,
+      });
+      if (error) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: error.message,
+        });
+      }
       if (is_shown) {
         visibility = false;
       } else {
