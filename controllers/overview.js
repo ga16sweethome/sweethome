@@ -16,21 +16,10 @@ module.exports = {
   getAllAppointment: async (req, res) => {
     try {
       let start = moment().tz("UTC").startOf("days").toDate();
-      let end = moment()
-        .tz("UTC")
-        .endOf("days")
-        .add(2, "days")
-        .add(7, "hours")
-        .toDate();
+      let end = moment().tz("UTC").endOf("days").add(2, "days").toDate();
       let TODAY = moment(new Date()).format("YYYY-MM-DD");
-      let besok = moment(new Date())
-        .add(1, "days")
-        .add(7, "hours")
-        .format("YYYY-MM-DD");
-      let lusa = moment(new Date())
-        .add(2, "days")
-        .add(7, "hours")
-        .format("YYYY-MM-DD");
+      let besok = moment(new Date()).add(1, "days").format("YYYY-MM-DD");
+      let lusa = moment(new Date()).add(2, "days").format("YYYY-MM-DD");
 
       let cari = await Appointment.findAll({
         where: {
