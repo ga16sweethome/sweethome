@@ -24,7 +24,18 @@ module.exports = {
       let cari = await Appointment.findAll({
         where: {
           appointmentDate: {
-            [Op.between]: [start, end],
+            [Op.or]: [
+              {
+                from: {
+                  [Op.between]: [start, end],
+                },
+              },
+              {
+                to: {
+                  [Op.between]: [start, endDate],
+                },
+              },
+            ],
           },
         },
         order: [["appointmentDate", "ASC"]],
