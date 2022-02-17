@@ -19,23 +19,15 @@ module.exports = {
       let end = moment().tz("UTC").endOf("days").add(1, "days").toDate();
       let TODAY = moment(new Date()).format("YYYY-MM-DD");
       let besok = moment(new Date()).add(1, "days").format("YYYY-MM-DD");
-      let lusa = moment(new Date()).add(2, "days").format("YYYY-MM-DD");
+      let lusa = moment(new Date())
+        .add(2, "days")
+        .add(7, "hours")
+        .format("YYYY-MM-DD");
 
       let cari = await Appointment.findAll({
         where: {
           appointmentDate: {
-            [Op.or]: [
-              {
-                from: {
-                  [Op.between]: [start, end],
-                },
-              },
-              {
-                to: {
-                  [Op.between]: [start, end],
-                },
-              },
-            ],
+            [Op.between]: [start, end],
           },
         },
         order: [["appointmentDate", "ASC"]],
