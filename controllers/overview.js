@@ -32,7 +32,7 @@ module.exports = {
               },
               {
                 to: {
-                  [Op.between]: [start, endDate],
+                  [Op.between]: [start, end],
                 },
               },
             ],
