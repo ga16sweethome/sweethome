@@ -744,7 +744,7 @@ module.exports = {
         });
       }
       await Gallery.bulkCreate(PGallery);
-      
+
       const result = await Showcase.findAll({
         where: {
           id: createShowcase.id,
@@ -862,7 +862,7 @@ module.exports = {
     try {
       const check = await Showcase.findByPk(id);
       let visibility;
-      if (check.is_shown) {
+      if (is_shown) {
         visibility = false;
       } else {
         visibility = true;
