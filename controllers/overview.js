@@ -16,7 +16,7 @@ module.exports = {
   getAllAppointment: async (req, res) => {
     try {
       let start = moment().tz("UTC").startOf("days").toDate();
-      let end = moment().tz("UTC").endOf("days").add(1, "days").toDate();
+      let end = moment().tz("UTC").endOf("days").add(2, "days").toDate();
       let TODAY = moment(new Date()).format("YYYY-MM-DD");
       let besok = moment(new Date()).add(1, "days").format("YYYY-MM-DD");
       let lusa = moment(new Date()).add(2, "days").format("YYYY-MM-DD");
@@ -72,7 +72,7 @@ module.exports = {
       res.status(200).json({
         status: "Succes",
         message: "Successfully retrieve the data",
-        result: { dataTODAY, databesok, datalusa, cari },
+        result: { dataTODAY, databesok, datalusa },
       });
     } catch (error) {
       errorHandler(res, error);
