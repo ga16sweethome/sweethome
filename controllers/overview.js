@@ -65,7 +65,9 @@ module.exports = {
       databesok.slice(1, 6); //untuk ngambil 5 data untuk ditampilkan
       dataTODAY.slice(1, 6); //untuk ngambil 5 data untuk ditampilkan
       datalusa.slice(1, 6); //untuk ngambil 5 data untuk ditampilkan
-
+      dataTODAY.unshift({ tanggal: TODAY });
+      databesok.unshift({ tanggal: besok });
+      datalusa.unshift({ tanggal: lusa });
       res.status(200).json({
         status: "Succes",
         message: "Successfully retrieve the data",
