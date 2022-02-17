@@ -16,7 +16,7 @@ module.exports = {
   getAllAppointment: async (req, res) => {
     try {
       let start = moment().tz("UTC").startOf("days").toDate();
-      let end = moment().tz("UTC").endOf("days").add(1, "days").toDate();
+      let end = moment().tz("UTC").endOf("days").add(2, "days").toDate();
       let TODAY = moment(new Date()).format("YYYY-MM-DD");
       let besok = moment(new Date()).add(1, "days").format("YYYY-MM-DD");
       let lusa = moment(new Date()).add(2, "days").format("YYYY-MM-DD");
@@ -27,6 +27,7 @@ module.exports = {
             [Op.between]: [start, end],
           },
         },
+        order: [["appointmentDate", "ASC"]],
         attributes: { exclude: ["id", "createdAt", "updatedAt"] },
         include: [
           {
@@ -65,7 +66,9 @@ module.exports = {
       databesok.slice(1, 6); //untuk ngambil 5 data untuk ditampilkan
       dataTODAY.slice(1, 6); //untuk ngambil 5 data untuk ditampilkan
       datalusa.slice(1, 6); //untuk ngambil 5 data untuk ditampilkan
-
+      dataTODAY.unshift({ tanggal: TODAY });
+      databesok.unshift({ tanggal: besok });
+      datalusa.unshift({ tanggal: lusa });
       res.status(200).json({
         status: "Succes",
         message: "Successfully retrieve the data",
