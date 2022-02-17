@@ -27,6 +27,7 @@ module.exports = {
             [Op.between]: [start, end],
           },
         },
+        order: ["dateAppointment", "ASC"],
         attributes: { exclude: ["id", "createdAt", "updatedAt"] },
         include: [
           {
