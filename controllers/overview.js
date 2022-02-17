@@ -71,7 +71,7 @@ module.exports = {
       res.status(200).json({
         status: "Succes",
         message: "Successfully retrieve the data",
-        result: { dataTODAY, databesok, datalusa },
+        result: { dataTODAY, databesok, datalusa, cari },
       });
     } catch (error) {
       errorHandler(res, error);
