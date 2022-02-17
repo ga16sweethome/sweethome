@@ -20,5 +20,5 @@ router.post("/admin/post/:id", isAdmin, shownShowcase); // seting visibility sho
 router.post("/admin/portfolio", isAdmin, createPortfolio); //create protfolio Showcase
 router.post("/admin/project", isAdmin, createCompletedProject); //create completed project Showcase
 router.get("/admin/project/:id", isAdmin, getDetailProjectByAdmin); // to get detail Project
-router.get("/admin/project/all", isAdmin, getListProject); // to get list of all project
+router.get("/admin/project/", isAdmin, getListProject); // to get list of all project
 module.exports = router;
