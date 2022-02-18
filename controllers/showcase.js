@@ -726,7 +726,6 @@ module.exports = {
         where: { name: body.projectType },
       });
 
-      return res.status(200).json({ result: pType });
       const pTypeId = pType.map((el) => el.id);
 
       const style = await Style.findAll({ where: { name: body.styles } });
@@ -739,6 +738,8 @@ module.exports = {
           projectTypeId: pTypeId[i],
         });
       }
+
+      return res.status(200).json(PTypeJunk);
       await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
 
       const StyleJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkStyle
