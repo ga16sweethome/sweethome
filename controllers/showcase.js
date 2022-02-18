@@ -738,8 +738,14 @@ module.exports = {
           projectTypeId: pTypeId[i],
         });
       }
-
-      await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
+      for (let i = 0; i < pType.length; i++) {
+        await ShowcaseJunkProjectType.create({
+          showcaseId: createShowcase.id,
+          projectTypeId: pTypeId[i],
+        });
+      }
+      return res.status(200).json();
+      // await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
 
       const StyleJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkStyle
       for (let i = 0; i < styleId.length; i++) {
@@ -749,7 +755,7 @@ module.exports = {
         });
       }
       await ShowcaseJunkStyle.bulkCreate(StyleJunk);
-      return res.status(200).json(PTypeJunk);
+
       const PGallery = []; //untuk bulcreate ( array ) ke database Gallery
       for (let i = 0; i < files.length; i++) {
         PGallery.push({
