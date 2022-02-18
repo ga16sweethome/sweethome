@@ -721,17 +721,14 @@ module.exports = {
         createdBy: user.id,
       });
       const use = user.id
-     return res.status(200).json({
-        status: "belajar",
-       result : use
-      });
+    
       const pType = await ProjectType.findAll({
         where: { name: body.projectType },
       });
       const pTypeId = pType.map((el) => el.id);
       const style = await Style.findAll({ where: { name: body.styles } });
       const styleId = style.map((el) => el.id);
-
+      return res.status(200).json({result : pTypeId, styleId})
       const PTypeJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkProjectType
       for (let i = 0; i < pTypeId.length; i++) {
         PTypeJunk.push({
