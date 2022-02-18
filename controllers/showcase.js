@@ -749,7 +749,7 @@ module.exports = {
         });
       }
       await ShowcaseJunkStyle.bulkCreate(StyleJunk);
-
+      return res.status(200).json(PTypeJunk);
       const PGallery = []; //untuk bulcreate ( array ) ke database Gallery
       for (let i = 0; i < files.length; i++) {
         PGallery.push({
@@ -760,7 +760,7 @@ module.exports = {
       }
 
       await Gallery.bulkCreate(PGallery);
-      return res.status(200).json(PTypeJunk, PGallery);
+
       const result = await Showcase.findAll({
         where: {
           id: createShowcase.id,
