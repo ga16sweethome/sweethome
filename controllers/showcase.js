@@ -715,16 +715,18 @@ module.exports = {
         });
       }
 
+      console.log("MASUK SEBELUM CREATE");
       const createShowcase = await Showcase.create({
         name: body.name,
         showcaseTypeId: 2,
         createdBy: user.id,
       });
-
+      console.log("MASUK SEBELUM FIND PROJECT TYPE");
       const pType = await ProjectType.findAll({
         where: { name: body.projectType },
       });
       const pTypeId = pType.map((el) => el.id);
+      console.log("MASUK SEBELUM FIND STYLE");
       const style = await Style.findAll({ where: { name: body.styles } });
       const styleId = style.map((el) => el.id);
 
@@ -735,6 +737,7 @@ module.exports = {
           projectTypeId: pTypeId[i],
         });
       }
+      console.log("MASUK SEBELUM BULK CREATE");
       await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
 
       const StyleJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkStyle
