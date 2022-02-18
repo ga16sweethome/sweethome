@@ -726,7 +726,7 @@ module.exports = {
         where: { name: body.projectType },
       });
 
-      return res.status(200).json({ result: pTYpe });
+      return res.status(200).json({ result: pType });
       const pTypeId = pType.map((el) => el.id);
 
       const style = await Style.findAll({ where: { name: body.styles } });
