@@ -581,7 +581,8 @@ module.exports = {
         name: Joi.string().required(),
         projectType: Joi.array().required().items(Joi.string().required()),
         styles: Joi.array().required().items(Joi.string().required()),
-        picture: Joi.string().required(),
+        title: Joi.array().required().items(Joi.string().required()),
+        picture: Joi.string(),
       });
       //validate input with Joi
       const { error } = schema.validate({
@@ -692,39 +693,39 @@ module.exports = {
         });
       }
 
-      //validate input with Joi
-      // const schema = Joi.object({
-      //   name: Joi.string().required(),
-      //   projectType: Joi.array().required().items(Joi.string()),
-      //   styles: Joi.array().required().items(Joi.string()),
-      //   picture: Joi.array().required().items(Joi.string()),
-      //   title: Joi.array().required().items(Joi.string().required()),
-      // });
+      // validate input with Joi
+      const schema = Joi.object({
+        name: Joi.string().required(),
+        projectType: Joi.array().required().items(Joi.string()),
+        styles: Joi.array().required().items(Joi.string()),
+        picture: Joi.string(), //validasi picture bagaimana ya? untuk files array
+        title: Joi.array().required().items(Joi.string().required()),
+      });
 
-      // const { error } = schema.validate({
-      //   ...body,
-      //   picture: files.path,
-      // });
+      const { error } = schema.validate({
+        ...body,
+        picture: files.path,
+      });
 
-      // //if error while validation
-      // if (error) {
-      //   return res.status(400).json({
-      //     status: "Bad Request",
-      //     message: error.message,
-      //   });
-      // }
+      //if error while validation
+      if (error) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: error.message,
+        });
+      }
 
       const createShowcase = await Showcase.create({
         name: body.name,
         showcaseTypeId: 2,
         createdBy: user.id,
       });
-      const queryP = body.projectType;
-      const queryS = body.styles;
 
-      const pType = await ProjectType.findAll({ where: { name: queryP } });
+      const pType = await ProjectType.findAll({
+        where: { name: body.projectType },
+      });
       const pTypeId = pType.map((el) => el.id);
-      const style = await Style.findAll({ where: { name: queryS } });
+      const style = await Style.findAll({ where: { name: body.styles } });
       const styleId = style.map((el) => el.id);
 
       const PTypeJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkProjectType
