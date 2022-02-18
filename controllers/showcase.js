@@ -736,7 +736,9 @@ module.exports = {
         });
       }
       await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
-
+      return res.status(200).json({
+        status: "belajar",
+      });
       const StyleJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkStyle
       for (let i = 0; i < styleId.length; i++) {
         StyleJunk.push({
