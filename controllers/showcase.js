@@ -720,14 +720,11 @@ module.exports = {
         showcaseTypeId: 2,
         createdBy: user.id,
       });
-      const use = user.id;
 
       const pType = await ProjectType.findAll({
         where: { name: body.projectType },
       });
-
       const pTypeId = pType.map((el) => el.id);
-
       const style = await Style.findAll({ where: { name: body.styles } });
       const styleId = style.map((el) => el.id);
 
@@ -738,14 +735,7 @@ module.exports = {
           projectTypeId: pTypeId[i],
         });
       }
-      for (let i = 0; i < pType.length; i++) {
-        await ShowcaseJunkProjectType.create({
-          showcaseId: createShowcase.id,
-          projectTypeId: pTypeId[i],
-        });
-      }
-      return res.status(200).json();
-      // await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
+      await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
 
       const StyleJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkStyle
       for (let i = 0; i < styleId.length; i++) {
