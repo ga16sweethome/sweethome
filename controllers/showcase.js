@@ -565,6 +565,7 @@ module.exports = {
   createCompletedProject: async (req, res) => {
     const body = req.body;
     const user = req.user;
+    const files = req.files;
     try {
       //create schema for Joi validate
       const schema = Joi.object({
@@ -578,16 +579,14 @@ module.exports = {
         projectAppointmentAddress: Joi.string().required(),
         projectAppointmentCode: Joi.number().required(),
         name: Joi.string().required(),
-        projectType: Joi.array().required().items(Joi.string()),
-        styles: Joi.array().required().items(Joi.string()),
-        picture: Joi.array().required().items({
-          title: Joi.string().required(),
-          picture: Joi.string().required(),
-        }),
+        projectType: Joi.array().required().items(Joi.string().required()),
+        styles: Joi.array().required().items(Joi.string().required()),
+        picture: Joi.string().required(),
       });
       //validate input with Joi
       const { error } = schema.validate({
         ...body,
+        picture: files.path,
       });
       if (error) {
         return res.status(400).json({
@@ -631,11 +630,11 @@ module.exports = {
 
       const PGallery = []; //untuk bulcreate ( array ) ke database Gallery
 
-      for (let i = 0; i < body.picture.length; i++) {
+      for (let i = 0; i < files.length; i++) {
         PGallery.push({
           showcaseId: createShowcase.id,
-          title: body.picture[i].title,
-          picture: body.picture[i].picture,
+          title: body.title[i],
+          picture: files[i].path,
         });
       }
 
@@ -683,26 +682,37 @@ module.exports = {
   createPortfolio: async (req, res) => {
     const body = req.body;
     const user = req.user;
+    const files = req.files;
     try {
-      const schema = Joi.object({
-        //validate input with Joi
-        name: Joi.string().required(),
-        projectType: Joi.array().required().items(Joi.string()),
-        styles: Joi.array().required().items(Joi.string()),
-        picture: Joi.array().required().items({
-          title: Joi.string().required(),
-          picture: Joi.string().required(),
-        }),
-      });
-      const { error } = schema.validate({
-        ...body,
-      });
-      if (error) {
+      //check is file is include
+      if (!files) {
         return res.status(400).json({
           status: "Bad Request",
-          message: error.message,
+          message: "Please Insert an Image file",
         });
       }
+
+      //validate input with Joi
+      // const schema = Joi.object({
+      //   name: Joi.string().required(),
+      //   projectType: Joi.array().required().items(Joi.string()),
+      //   styles: Joi.array().required().items(Joi.string()),
+      //   picture: Joi.array().required().items(Joi.string()),
+      //   title: Joi.array().required().items(Joi.string().required()),
+      // });
+
+      // const { error } = schema.validate({
+      //   ...body,
+      //   picture: files.path,
+      // });
+
+      // //if error while validation
+      // if (error) {
+      //   return res.status(400).json({
+      //     status: "Bad Request",
+      //     message: error.message,
+      //   });
+      // }
 
       const createShowcase = await Showcase.create({
         name: body.name,
@@ -736,13 +746,14 @@ module.exports = {
       await ShowcaseJunkStyle.bulkCreate(StyleJunk);
 
       const PGallery = []; //untuk bulcreate ( array ) ke database Gallery
-      for (let i = 0; i < body.picture.length; i++) {
+      for (let i = 0; i < files.length; i++) {
         PGallery.push({
           showcaseId: createShowcase.id,
-          title: body.picture[i].title,
-          picture: body.picture[i].picture,
+          title: body.title[i],
+          picture: files[i].path,
         });
       }
+
       await Gallery.bulkCreate(PGallery);
 
       const result = await Showcase.findAll({
@@ -776,6 +787,7 @@ module.exports = {
           },
         ],
       });
+
       res.status(200).json({
         status: "Succes",
         message: "Successfully created Showcase Protfolio",
