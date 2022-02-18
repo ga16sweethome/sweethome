@@ -730,7 +730,7 @@ module.exports = {
       const styleId = style.map((el) => el.id);
       return res.status(200).json({
         result:
-          (pTYpe,
+          (pType,
           "ini ptypeId" + pTypeId + "\nIni Style",
           style,
           "\n" + styleId),
