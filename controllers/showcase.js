@@ -692,6 +692,7 @@ module.exports = {
           message: "Please Insert an Image file",
         });
       }
+      console.log(files)
 
       // validate input with Joi
       const schema = Joi.object({
