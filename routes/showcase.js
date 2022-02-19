@@ -34,5 +34,5 @@ router.post(
 router.get("/admin/project/:id", isAdmin, getDetailProjectByAdmin); // to get detail Project
 router.get("/admin/project/", isAdmin, getListProject); // to get list of all project
 
-router.post("/test/test", test);
+
 module.exports = router;
