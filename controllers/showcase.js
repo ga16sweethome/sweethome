@@ -999,7 +999,7 @@ module.exports = {
         showcaseId: 2,
         sectionId: 3,
       });
-      res.send("g tau dah apaan");
+      res.status(200).json({ test: create });
     } catch (error) {
       errorHandler(res, error);
     }
