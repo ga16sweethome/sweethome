@@ -997,6 +997,7 @@ module.exports = {
     try {
       console.log("gagal");
       const create = await ShowcaseJunkSection.create({
+        id: 5,
         showcaseId: 2,
         sectionId: 3,
       });
