@@ -1,37 +1,38 @@
-'use strict';
+"use strict";
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Favorites', {
+    await queryInterface.createTable("Favorites", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       userId: {
         type: Sequelize.INTEGER,
-        allowNull :false,
-        references : {
-          model : "Users",  //mengikuti model migrations name
-          key : "id"
+        allowNull: false,
+        references: {
+          model: "Users", //mengikuti model migrations name
+          key: "id",
         },
-        onDelete : "CASCADE",
-        onUpdate : "CASCADE"
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       showcaseId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Favorites');
-  }
+    await queryInterface.dropTable("Favorites");
+  },
 };

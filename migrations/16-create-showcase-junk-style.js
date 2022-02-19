@@ -1,37 +1,38 @@
-'use strict';
+"use strict";
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('ShowcaseJunkStyles', {
+    await queryInterface.createTable("ShowcaseJunkStyles", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       showcaseId: {
         type: Sequelize.INTEGER,
-        allowNull :false,
-        references : {
-          model : "Showcases",  //mengikuti model migrations name
-          key : "id"
+        allowNull: false,
+        references: {
+          model: "Showcases", //mengikuti model migrations name
+          key: "id",
         },
-        onDelete : "CASCADE",
-        onUpdate : "CASCADE"
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       styleId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('ShowcaseJunkStyles');
-  }
+    await queryInterface.dropTable("ShowcaseJunkStyles");
+  },
 };
