@@ -993,4 +993,15 @@ module.exports = {
       errorHandler(res, error);
     }
   },
+  test: async (req, res) => {
+    try {
+      const create = await ShowcaseJunkSection.create({
+        showcaseId: 2,
+        sectionId: 3,
+      });
+      res.status(200).json({ test: create });
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
 };
