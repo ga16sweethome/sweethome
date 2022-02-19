@@ -999,6 +999,7 @@ module.exports = {
         showcaseId: 2,
         sectionId: 3,
       });
+      res.send("g tau dah apaan");
     } catch (error) {
       errorHandler(res, error);
     }
