@@ -11,12 +11,6 @@ module.exports = {
       showcaseId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: {
-          model: "Showcases", //mengikuti model migrations name
-          key: "id",
-        },
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
       },
       sectionId: {
         type: Sequelize.INTEGER,
