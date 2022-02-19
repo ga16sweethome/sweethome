@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node_modules/.bin/sequelize db:migrate",
     "heroku-release": "node_modules/.bin/sequelize db:migrate && node_modules/.bin/sequelize db:seed:all"
   },
   "repository": {
@@ -39,6 +40,6 @@
     "sequelize": "^6.15.0",
     "sequelize-cli": "^6.4.1",
     "tojson": "^0.3.18",
-     "path": "^0.12.7"
+    "path": "^0.12.7"
   }
 }
