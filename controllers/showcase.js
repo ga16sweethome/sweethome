@@ -995,6 +995,7 @@ module.exports = {
   },
   test: async (req, res) => {
     try {
+      console.log("gagal");
       const create = await ShowcaseJunkSection.create({
         showcaseId: 2,
         sectionId: 3,
