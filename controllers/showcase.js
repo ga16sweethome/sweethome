@@ -535,8 +535,10 @@ module.exports = {
     const body = req.body;
     const user = req.user;
     const files = req.files;
+    let transaction;
 
     try {
+      transaction = await sequelize.transaction();
       //validasi apakah filesnya ada atau tidak
       if (files.length === 0) {
         return res.status(400).json({
@@ -576,12 +578,15 @@ module.exports = {
         });
       }
 
-      const createShowcase = await Showcase.create({
-        name: body.name,
-        showcaseTypeId: 2,
-        createdBy: user.id,
-        is_shown: false,
-      });
+      const createShowcase = await Showcase.create(
+        {
+          name: body.name,
+          showcaseTypeId: 2,
+          createdBy: user.id,
+          is_shown: false,
+        },
+        { transaction: transaction }
+      );
 
       if (!createShowcase) {
         return res.status(500).json({
@@ -592,38 +597,39 @@ module.exports = {
       }
       const queryP = body.projectType;
       const PTypeJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkProjectType
-      if (queryP) {
-        const pType = await ProjectType.findAll({ where: { name: queryP } });
-        //validasi jika tidak ada data ProjectType
-        if (!pType) {
+      const pType = await ProjectType.findAll({ where: { name: queryP } });
+      //validasi jika tidak ada data ProjectType
+      if (!pType) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: "Project Type is not found",
+        });
+      }
+      const pTypeId = pType.map((el) => el.id);
+      for (let i = 0; i < pTypeId.length; i++) {
+        //validasi isi ProjectType.id
+        if (
+          pTypeId[i] === null ||
+          pTypeId[i] === undefined ||
+          queryP.length != pTypeId.length
+        ) {
           return res.status(400).json({
-            status: "Bad Request",
-            message: "Project Type is not found",
-          });
-        }
-        const pTypeId = pType.map((el) => el.id);
-        for (let i = 0; i < pTypeId.length; i++) {
-          //validasi isi ProjectType.id
-          if (
-            pTypeId[i] === null ||
-            pTypeId[i] === undefined ||
-            queryP.length != pTypeId.length
-          ) {
-            return res.status(400).json({
-              Status: "Bad request",
-              Message: "ProjectType  is not match",
-            });
-          }
-        }
-
-        for (let i = 0; i < pTypeId.length; i++) {
-          PTypeJunk.push({
-            showcaseId: createShowcase.id,
-            projectTypeId: pTypeId[i],
+            Status: "Bad request",
+            Message: "ProjectType  is not match",
           });
         }
       }
-      const buatJunkP = await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
+
+      for (let i = 0; i < pTypeId.length; i++) {
+        PTypeJunk.push({
+          showcaseId: createShowcase.id,
+          projectTypeId: pTypeId[i],
+        });
+      }
+
+      const buatJunkP = await ShowcaseJunkProjectType.bulkCreate(PTypeJunk, {
+        transaction: transaction,
+      });
       //validasi gagal BulkCreate SHowcaseJunkProjectType
       if (!buatJunkP) {
         return res.send("gagal");
@@ -631,76 +637,80 @@ module.exports = {
 
       const querySection = body.section;
       const ssJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkProjectType
-      if (querySection) {
-        const pSection = await Section.findAll({
-          where: { name: querySection },
-        });
-        //validasi jika tidak ada data Section
-        if (!pSection) {
-          return res.status(400).json({
-            status: "Bad Request",
-            message: "Section is not found",
-          });
-        }
-        const ssId = pSection.map((el) => el.id);
 
-        for (let i = 0; i < ssId.length; i++) {
-          //validasi jika is section.id not null, not undefined  )
-          if (
-            ssId[i] === undefined ||
-            ssId[i] === null ||
-            querySection.length != ssId.length
-          ) {
-            return res.status(400).json({
-              Status: "Bad request",
-              Message: "Setion is not match",
-            });
-          }
-        }
-        for (let i = 0; i < pSection.length; i++) {
-          ssJunk.push({
-            showcaseId: createShowcase.id,
-            sectionId: ssId[i],
+      const pSection = await Section.findAll({
+        where: { name: querySection },
+      });
+      //validasi jika tidak ada data Section
+      if (!pSection) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: "Section is not found",
+        });
+      }
+      const ssId = pSection.map((el) => el.id);
+
+      for (let i = 0; i < ssId.length; i++) {
+        //validasi jika is section.id not null, not undefined  )
+        if (
+          ssId[i] === undefined ||
+          ssId[i] === null ||
+          querySection.length != ssId.length
+        ) {
+          return res.status(400).json({
+            Status: "Bad request",
+            Message: "Setion is not match",
           });
         }
       }
-      const buatSSJunk = await ShowcaseJunkSection.bulkCreate(ssJunk);
+      for (let i = 0; i < pSection.length; i++) {
+        ssJunk.push({
+          showcaseId: createShowcase.id,
+          sectionId: ssId[i],
+        });
+      }
+
+      const buatSSJunk = await ShowcaseJunkSection.bulkCreate(ssJunk, {
+        transaction: transaction,
+      });
       if (!buatSSJunk) {
         res.send("gagal buat section ID");
       }
 
       const queryS = body.styles;
       const StyleJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkStyle
-      if (queryS) {
-        const style = await Style.findAll({ where: { name: queryS } });
-        if (!style) {
+
+      const style = await Style.findAll({ where: { name: queryS } });
+      if (!style) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: "Styles is not found",
+        });
+      }
+      const styleId = style.map((el) => el.id);
+      for (let i = 0; i < styleId.length; i++) {
+        //validasi jika is section.id not null, not undefined  )
+        if (
+          styleId[i] === undefined ||
+          styleId[i] === null ||
+          queryS.length != styleId.length
+        ) {
           return res.status(400).json({
-            status: "Bad Request",
-            message: "Styles is not found",
-          });
-        }
-        const styleId = style.map((el) => el.id);
-        for (let i = 0; i < styleId.length; i++) {
-          //validasi jika is section.id not null, not undefined  )
-          if (
-            styleId[i] === undefined ||
-            styleId[i] === null ||
-            queryS.length != styleId.length
-          ) {
-            return res.status(400).json({
-              Status: "Bad request",
-              Message: "Styles is not match",
-            });
-          }
-        }
-        for (let i = 0; i < styleId.length; i++) {
-          StyleJunk.push({
-            showcaseId: createShowcase.id,
-            styleId: styleId[i],
+            Status: "Bad request",
+            Message: "Styles is not match",
           });
         }
       }
-      const buatJunkS = await ShowcaseJunkStyle.bulkCreate(StyleJunk);
+      for (let i = 0; i < styleId.length; i++) {
+        StyleJunk.push({
+          showcaseId: createShowcase.id,
+          styleId: styleId[i],
+        });
+      }
+
+      const buatJunkS = await ShowcaseJunkStyle.bulkCreate(StyleJunk, {
+        transaction: transaction,
+      });
       if (!buatJunkS) {
         res.send("gagal");
       }
@@ -713,11 +723,14 @@ module.exports = {
           picture: files[i].path,
         });
       }
-      const buatGallery = await Gallery.bulkCreate(PGallery);
+      const buatGallery = await Gallery.bulkCreate(PGallery, {
+        transaction: transaction,
+      });
       if (!buatGallery) {
         res.send("gagal");
       }
 
+      await transaction.commit();
       const result = await Showcase.findOne({
         where: {
           id: createShowcase.id,
@@ -729,6 +742,7 @@ module.exports = {
         result: result,
       });
     } catch (error) {
+      if (transaction) transaction.rollback();
       errorHandler(res, error);
     }
   },
