@@ -966,27 +966,6 @@ module.exports = {
         where: {
           id: createShowcase.id,
         },
-        include: [
-          {
-            model: ShowcaseJunkSection,
-            as: "showcaseJunkSection",
-            include: [(model: Section), (as: "section")],
-          },
-          {
-            model: ShowcaseJunkProjectType,
-            as: "showcaseJunkProjectType",
-            include: [{ model: ProjectType, as: "projectType" }],
-          },
-          {
-            model: ShowcaseJunkSection,
-            as: "showcaseJunkProjectSection",
-            include: [{ model: Section, as: "section" }],
-          },
-          {
-            model: Gallery,
-            as: "gallery",
-          },
-        ],
       });
       res.status(200).json({
         status: "Succes",
