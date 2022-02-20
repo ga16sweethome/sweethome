@@ -1,3 +1,3 @@
-release: npx seqeulize db:seed:all
+release: npx sequelize-cli db:seed:all
 
 web: node server.js
