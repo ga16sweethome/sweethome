@@ -39,6 +39,7 @@ module.exports = {
         estimateTime: joi.number().required(),
         budget: joi.number().required(),
         address: joi.string().required(),
+        areaSize: joi.number().required(),
         note: joi.string().required(),
         date: joi.date().format("YYYY-MM-DD").required(),
         time: joi.string().required(),
@@ -49,6 +50,7 @@ module.exports = {
         estimateTime: body.estimateTime,
         budget: body.budget,
         address: body.address,
+        areaSize: body.areaSize,
         note: body.note,
         date: body.date,
         time: body.time,
@@ -68,30 +70,32 @@ module.exports = {
       const serviceType = await ServiceType.findOne({
         where: { name: body.serviceType },
       });
-      
+
       const timeslot = await Timeslot.findOne({
         where: {
           time: body.time,
           serviceTypeId: serviceType.id,
         },
       });
-      
+
       const doubleAppointment = await Appointment.findOne({
         where: {
           appointmentDate: body.date,
-          timeslotId: timeslot.id
-        }
-      })
-      if (doubleAppointment) return res.status(401).json({
-        status: "Failed Create Appointment",
-        message: "Can't Create Appointment Same Date & Time",
-      })
+          timeslotId: timeslot.id,
+        },
+      });
+      if (doubleAppointment)
+        return res.status(401).json({
+          status: "Failed Create Appointment",
+          message: "Can't Create Appointment Same Date & Time",
+        });
 
       const create = await Appointment.create({
         userId: user.id,
         buildingTypeId: buildingType.id,
         serviceTypeId: serviceType.id,
         estimateTime: body.estimateTime,
+        areaSize: body.areaSize,
         budget: body.budget,
         address: body.address,
         note: body.note,
