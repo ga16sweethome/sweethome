@@ -794,13 +794,6 @@ module.exports = {
         });
       }
       // validasi title array  =  files array
-      if (body.title.length != files.length) {
-        return res.status(400).json({
-          status: "Bad Request",
-          message: "please fill all the data that required",
-          result: {},
-        });
-      }
 
       //create schema for Joi validate
       const schema = Joi.object({
@@ -821,6 +814,13 @@ module.exports = {
         return res.status(400).json({
           status: "Bad Request",
           message: error.message,
+        });
+      }
+      if (body.title.length != files.length) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: "please fill all the data that required",
+          result: {},
         });
       }
 
@@ -993,5 +993,4 @@ module.exports = {
       errorHandler(res, error);
     }
   },
-  
 };
