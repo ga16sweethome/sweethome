@@ -833,7 +833,7 @@ module.exports = {
         },
         { transaction: transaction }
       );
-
+      return res.status(200).json({ gagal: "kosong" });
       if (!createShowcase) {
         return res.status(500).json({
           status: " Create Showcase failed",
