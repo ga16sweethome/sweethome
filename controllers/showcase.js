@@ -779,9 +779,8 @@ module.exports = {
     const body = req.body;
     const user = req.user;
     const files = req.files;
-    let transaction;
+
     try {
-      transaction = await sequelize.transaction();
       //validasi apakah filesnya ada atau tidak
       if (files.length === 0) {
         return res.status(400).json({
@@ -821,15 +820,12 @@ module.exports = {
         });
       }
 
-      const createShowcase = await Showcase.create(
-        {
-          name: body.name,
-          showcaseTypeId: 2,
-          createdBy: user.id,
-          is_shown: false,
-        },
-        { transaction: transaction }
-      );
+      const createShowcase = await Showcase.create({
+        name: body.name,
+        showcaseTypeId: 2,
+        createdBy: user.id,
+        is_shown: false,
+      });
 
       if (!createShowcase) {
         return res.status(500).json({
@@ -871,9 +867,7 @@ module.exports = {
           });
         }
       }
-      const buatJunkP = await ShowcaseJunkProjectType.bulkCreate(PTypeJunk, {
-        transaction: transaction,
-      });
+      const buatJunkP = await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
       //validasi gagal BulkCreate SHowcaseJunkProjectType
       if (!buatJunkP) {
         return res.send("gagal");
@@ -914,9 +908,7 @@ module.exports = {
           });
         }
       }
-      const buatSSJunk = await ShowcaseJunkSection.bulkCreate(ssJunk, {
-        transaction: transaction,
-      });
+      const buatSSJunk = await ShowcaseJunkSection.bulkCreate(ssJunk);
       if (!buatSSJunk) {
         res.send("gagal buat section ID");
       }
@@ -965,14 +957,11 @@ module.exports = {
           picture: files[i].path,
         });
       }
-      const buatGallery = await Gallery.bulkCreate(PGallery, {
-        transaction: transaction,
-      });
+      const buatGallery = await Gallery.bulkCreate(PGallery);
       if (!buatGallery) {
         res.send("gagal");
       }
 
-      await transaction.commit();
       const result = await Showcase.findOne({
         where: {
           id: createShowcase.id,
@@ -1005,7 +994,6 @@ module.exports = {
         result: result,
       });
     } catch (error) {
-      if (transaction) transaction.rollback();
       errorHandler(res, error);
     }
   },
