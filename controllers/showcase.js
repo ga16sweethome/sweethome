@@ -824,16 +824,13 @@ module.exports = {
         });
       }
 
-      const createShowcase = await Showcase.create(
-        {
-          name: body.name,
-          showcaseTypeId: 2,
-          createdBy: user.id,
-          is_shown: false,
-        },
-        { transaction: transaction }
-      );
-      return res.status(200).json({ gagal: "kosong" });
+      const createShowcase = await Showcase.create({
+        name: body.name,
+        showcaseTypeId: 2,
+        createdBy: user.id,
+        is_shown: false,
+      });
+
       if (!createShowcase) {
         return res.status(500).json({
           status: " Create Showcase failed",
