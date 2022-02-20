@@ -534,22 +534,13 @@ module.exports = {
     const body = req.body;
     const user = req.user;
     const files = req.files;
-    let transaction;
+
     try {
-      transaction = await sequelize.transaction();
       //validasi apakah filesnya ada atau tidak
       if (files.length === 0) {
         return res.status(400).json({
           status: "Bad Request",
           message: `\"picture\" required files`,
-          result: {},
-        });
-      }
-      // validasi title array  =  files array
-      if (body.title.length != files.length) {
-        return res.status(400).json({
-          status: "Bad Request",
-          message: "please fill all the data that required",
           result: {},
         });
       }
@@ -569,7 +560,7 @@ module.exports = {
         picture: Joi.array(),
       });
 
-      //
+      // validasi body dan files
       const { error } = schema.validate({
         ...body,
         picture: files.path,
@@ -581,6 +572,14 @@ module.exports = {
         });
       }
 
+      // validasi title array  =  files array
+      if (body.title.length != files.length) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: "please fill all the data that required",
+          result: {},
+        });
+      }
       const createShowcase = await Showcase.create({
         name: body.name,
         showcaseTypeId: 1,
@@ -631,9 +630,7 @@ module.exports = {
           });
         }
       }
-      const buatJunkP = await ShowcaseJunkProjectType.bulkCreate(PTypeJunk, {
-        transaction: transaction,
-      });
+      const buatJunkP = await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
       //validasi gagal BulkCreate SHowcaseJunkProjectType
       if (!buatJunkP) {
         return res.status(400).json({
@@ -680,9 +677,7 @@ module.exports = {
           });
         }
       }
-      const buatSSJunk = await ShowcaseJunkSection.bulkCreate(ssJunk, {
-        transaction: transaction,
-      });
+      const buatSSJunk = await ShowcaseJunkSection.bulkCreate(ssJunk);
       if (!buatSSJunk) {
         return res.status(400).json({
           status: "Bad Request",
@@ -724,13 +719,11 @@ module.exports = {
           });
         }
       }
-      const buatJunkS = await ShowcaseJunkStyle.bulkCreate(StyleJunk, {
-        transaction: transaction,
-      });
+      const buatJunkS = await ShowcaseJunkStyle.bulkCreate(StyleJunk);
       if (!buatJunkS) {
         return res.status(400).json({
           status: "Bad Request",
-          message: "Create ShowcaseJunStylee failed",
+          message: "Create ShowcaseJunStyle failed",
           result: {},
         });
       }
@@ -743,9 +736,7 @@ module.exports = {
           picture: files[i].path,
         });
       }
-      const buatGallery = await Gallery.bulkCreate(PGallery, {
-        transaction: transaction,
-      });
+      const buatGallery = await Gallery.bulkCreate(PGallery);
       if (!buatGallery) {
         return res.status(400).json({
           status: "Bad Request",
@@ -754,7 +745,6 @@ module.exports = {
         });
       }
 
-      await transaction.commit();
       const result = await Showcase.findOne({
         where: { id: createShowcase.id },
       });
@@ -771,7 +761,6 @@ module.exports = {
         result: result,
       });
     } catch (error) {
-      if (transaction) transaction.rollback();
       errorHandler(res, error);
     }
   },
@@ -789,7 +778,6 @@ module.exports = {
           result: {},
         });
       }
-      // validasi title array  =  files array
 
       //create schema for Joi validate
       const schema = Joi.object({
@@ -801,7 +789,7 @@ module.exports = {
         picture: Joi.array(),
       });
 
-      //
+      //validasi body dan files
       const { error } = schema.validate({
         ...body,
         picture: files.path,
@@ -812,6 +800,7 @@ module.exports = {
           message: error.message,
         });
       }
+      // validasi title array  =  files array
       if (body.title.length != files.length) {
         return res.status(400).json({
           status: "Bad Request",
