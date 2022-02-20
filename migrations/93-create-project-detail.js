@@ -1,58 +1,42 @@
 "use strict";
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Appointments", {
+    await queryInterface.createTable("ProjectDetails", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      code: {
-        type: Sequelize.STRING,
-        unique: true,
-      },
-      userId: {
+      sectionId: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      buildingTypeId: {
+      projectTypeId: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      serviceTypeId: {
+      workDuration: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      estimateTime: {
+      area: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      budget: {
+      price: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      address: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-      note: {
-        type: Sequelize.TEXT,
-      },
-      appointmentDate: {
-        type: Sequelize.DATEONLY,
-        allowNull: false,
-      },
-      timeslotId: {
+      projectId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-      },
-      status: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      completedAt: {
-        type: Sequelize.DATE,
+        references: {
+          model: "Projects", //mengikuti model migrations name
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       createdAt: {
         allowNull: false,
@@ -65,6 +49,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Appointments");
+    await queryInterface.dropTable("ProjectDetails");
   },
 };

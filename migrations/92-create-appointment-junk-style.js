@@ -1,15 +1,25 @@
 "use strict";
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("ProjectTypes", {
+    await queryInterface.createTable("AppointmentJunkStyles", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      name: {
-        type: Sequelize.STRING,
+      appointmentId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "Appointments", //mengikuti model migrations name
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+      styleId: {
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       createdAt: {
@@ -23,6 +33,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("ProjectTypes");
+    await queryInterface.dropTable("AppointmentJunkStyles");
   },
 };

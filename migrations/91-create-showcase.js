@@ -18,9 +18,11 @@ module.exports = {
       },
       showcaseTypeId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
       createdBy: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
       is_shown: {
         type: Sequelize.BOOLEAN,
