@@ -750,12 +750,8 @@ module.exports = {
 
       //create schema for Joi validate
       const schema = Joi.object({
-        projectId: Joi.number().required(),
-        projectTotalPrice: Joi.number().required(),
-        projectTotalDuration: Joi.number().required(),
-        projectAppointmentAddress: Joi.string().required(),
-        projectAppointmentId: Joi.number().required(),
         name: Joi.string().required(),
+        projectId: Joi.number().required(),
         projectType: Joi.array().required().items(Joi.string().required()),
         section: Joi.array().required().items(Joi.string().required()),
         styles: Joi.array().required().items(Joi.string().required()),
@@ -763,7 +759,7 @@ module.exports = {
         picture: Joi.array(),
       });
 
-      // validasi body dan files
+      //validasi body dan files
       const { error } = schema.validate({
         ...body,
         picture: files.path,
@@ -774,7 +770,6 @@ module.exports = {
           message: error.message,
         });
       }
-
       // validasi title array  =  files array
       if (body.title.length != files.length) {
         return res.status(400).json({
@@ -783,32 +778,155 @@ module.exports = {
           result: {},
         });
       }
+
       const createShowcase = await Showcase.create({
         name: body.name,
-        showcaseTypeId: 1,
         projectId: body.projectId,
+        showcaseTypeId: 1,
         createdBy: user.id,
         is_shown: false,
       });
 
       if (!createShowcase) {
-        return res.status(400).json({
-          status: "Bad Request",
-          message: "Create Showcase failed",
+        return res.status(500).json({
+          status: " Internal Server Error",
+          message: "Create Showcase completed Project failed",
           result: {},
         });
+      }
+      const queryP = body.projectType;
+      const PTypeJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkProjectType
+      if (queryP) {
+        const pType = await ProjectType.findAll({ where: { name: queryP } });
+        //validasi jika tidak ada data ProjectType
+        if (!pType) {
+          return res.status(400).json({
+            status: "Bad Request",
+            message: "Project Type is not found",
+          });
+        }
+        const pTypeId = pType.map((el) => el.id);
+        for (let i = 0; i < pTypeId.length; i++) {
+          //validasi isi ProjectType.id
+          if (
+            pTypeId[i] === null ||
+            pTypeId[i] === undefined ||
+            queryP.length != pTypeId.length
+          ) {
+            return res.status(400).json({
+              Status: "Bad request",
+              Message: "ProjectType  is not match",
+            });
+          }
+        }
+
+        for (let i = 0; i < pTypeId.length; i++) {
+          PTypeJunk.push({
+            showcaseId: createShowcase.id,
+            projectTypeId: pTypeId[i],
+          });
+        }
+      }
+      const buatJunkP = await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
+      //validasi gagal BulkCreate SHowcaseJunkProjectType
+      if (!buatJunkP) {
+        return res.send("gagal");
+      }
+
+      const querySection = body.section;
+      const ssJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkProjectType
+      if (querySection) {
+        const pSection = await Section.findAll({
+          where: { name: querySection },
+        });
+        //validasi jika tidak ada data Section
+        if (!pSection) {
+          return res.status(400).json({
+            status: "Bad Request",
+            message: "Section is not found",
+          });
+        }
+        const ssId = pSection.map((el) => el.id);
+
+        for (let i = 0; i < ssId.length; i++) {
+          //validasi jika is section.id not null, not undefined  )
+          if (
+            ssId[i] === undefined ||
+            ssId[i] === null ||
+            querySection.length != ssId.length
+          ) {
+            return res.status(400).json({
+              Status: "Bad request",
+              Message: "Setion is not match",
+            });
+          }
+        }
+        for (let i = 0; i < pSection.length; i++) {
+          ssJunk.push({
+            showcaseId: createShowcase.id,
+            sectionId: ssId[i],
+          });
+        }
+      }
+      const buatSSJunk = await ShowcaseJunkSection.bulkCreate(ssJunk);
+      if (!buatSSJunk) {
+        res.send("gagal buat section ID");
+      }
+
+      const queryS = body.styles;
+      const StyleJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkStyle
+      if (queryS) {
+        const style = await Style.findAll({ where: { name: queryS } });
+        if (!style) {
+          return res.status(400).json({
+            status: "Bad Request",
+            message: "Styles is not found",
+          });
+        }
+        const styleId = style.map((el) => el.id);
+        for (let i = 0; i < styleId.length; i++) {
+          //validasi jika is section.id not null, not undefined  )
+          if (
+            styleId[i] === undefined ||
+            styleId[i] === null ||
+            queryS.length != styleId.length
+          ) {
+            return res.status(400).json({
+              Status: "Bad request",
+              Message: "Styles is not match",
+            });
+          }
+        }
+        for (let i = 0; i < styleId.length; i++) {
+          StyleJunk.push({
+            showcaseId: createShowcase.id,
+            styleId: styleId[i],
+          });
+        }
+      }
+      const buatJunkS = await ShowcaseJunkStyle.bulkCreate(StyleJunk);
+      if (!buatJunkS) {
+        res.send("gagal");
+      }
+
+      const PGallery = []; //untuk bulcreate ( array ) ke database Gallery
+      for (let i = 0; i < files.length; i++) {
+        PGallery.push({
+          showcaseId: createShowcase.id,
+          title: body.title[i],
+          picture: files[i].path,
+        });
+      }
+      const buatGallery = await Gallery.bulkCreate(PGallery);
+      if (!buatGallery) {
+        res.send("gagal");
       }
 
       const result = await Showcase.findOne({
-        where: { id: createShowcase.id },
+        where: {
+          id: createShowcase.id,
+        },
       });
-      if (!result) {
-        return res.status(400).json({
-          status: "Bad Request",
-          message: "Data Not Found",
-          result: {},
-        });
-      }
       res.status(200).json({
         status: "Succes",
         message: "Successfully created Showcase Completed Project",
