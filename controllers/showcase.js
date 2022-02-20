@@ -581,16 +581,13 @@ module.exports = {
         });
       }
 
-      const createShowcase = await Showcase.create(
-        {
-          name: body.name,
-          showcaseTypeId: 1,
-          projectId: body.projectId,
-          createdBy: user.id,
-          is_shown: false,
-        },
-        { transaction: transaction }
-      );
+      const createShowcase = await Showcase.create({
+        name: body.name,
+        showcaseTypeId: 1,
+        projectId: body.projectId,
+        createdBy: user.id,
+        is_shown: false,
+      });
 
       if (!createShowcase) {
         return res.status(400).json({
@@ -824,12 +821,15 @@ module.exports = {
         });
       }
 
-      const createShowcase = await Showcase.create({
-        name: body.name,
-        showcaseTypeId: 2,
-        createdBy: user.id,
-        is_shown: false,
-      });
+      const createShowcase = await Showcase.create(
+        {
+          name: body.name,
+          showcaseTypeId: 2,
+          createdBy: user.id,
+          is_shown: false,
+        },
+        { transaction: transaction }
+      );
 
       if (!createShowcase) {
         return res.status(500).json({
@@ -952,9 +952,7 @@ module.exports = {
           });
         }
       }
-      const buatJunkS = await ShowcaseJunkStyle.bulkCreate(StyleJunk, {
-        transaction: transaction,
-      });
+      const buatJunkS = await ShowcaseJunkStyle.bulkCreate(StyleJunk);
       if (!buatJunkS) {
         res.send("gagal");
       }
@@ -979,6 +977,27 @@ module.exports = {
         where: {
           id: createShowcase.id,
         },
+        include: [
+          {
+            model: ShowcaseJunkSection,
+            as: "showcaseJunkSection",
+            include: [(model: Section), (as: "section")],
+          },
+          {
+            model: ShowcaseJunkProjectType,
+            as: "showcaseJunkProjectType",
+            include: [{ model: ProjectType, as: "projectType" }],
+          },
+          {
+            model: ShowcaseJunkSection,
+            as: "showcaseJunkProjectSection",
+            include: [{ model: Section, as: "section" }],
+          },
+          {
+            model: Gallery,
+            as: "gallery",
+          },
+        ],
       });
       res.status(200).json({
         status: "Succes",
