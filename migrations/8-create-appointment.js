@@ -51,6 +51,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
+      areSize: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
       completedAt: {
         type: Sequelize.DATE,
       },

@@ -53,6 +53,7 @@ module.exports = (sequelize, DataTypes) => {
       appointmentDate: DataTypes.DATEONLY,
       timeslotId: DataTypes.INTEGER,
       status: DataTypes.INTEGER,
+      areaSize: DataTypes.INTEGER,
       completedAt: DataTypes.DATE,
     },
     {
