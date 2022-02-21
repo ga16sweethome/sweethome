@@ -301,7 +301,7 @@ module.exports = {
       <h1>Password reset confirmation</h1>
       <b>Please conmfirm you passwword reset by clicking the link bellow</b>
       <h2>
-      <a href="https://localhost:5000/api/v1/user/forgotcode?code=${passwordReset.validationCode}">Click Here</a></h2>`
+      <a href="${process.env.BASEURL}/api/v1/user/forgotcode?code=${passwordReset.validationCode}">Click Here</a></h2>`
       );
       res.status(200).json({
         status: "success",
