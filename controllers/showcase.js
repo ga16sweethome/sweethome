@@ -54,7 +54,6 @@ module.exports = {
             as: "gallery",
             attributes: ["title", "picture"],
           },
-
           {
             model: ShowcaseJunkProjectType,
             as: "showcaseJunkProjectType",
