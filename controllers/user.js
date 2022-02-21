@@ -4,6 +4,7 @@ const {
   Showcase,
   ShowcaseJunkSection,
   Section,
+  PasswordReset,
 } = require("../models");
 const errorHandler = require("../helpers/error-handler");
 const Joi = require("joi"); //use joi validation NPM
@@ -14,6 +15,8 @@ const {
 } = require("../helpers/bcrypt");
 const { generateToken } = require("../helpers/jwt");
 const { Op } = require("sequelize"); //use Op from Sequelize
+const random = require("randomstring");
+const sendMail = require("../helpers/mail-sender");
 
 module.exports = {
   getOne: async (req, res) => {
@@ -43,21 +46,20 @@ module.exports = {
         email: Joi.string().email().required(),
         password: Joi.string().min(6).required(),
       });
-      const checkPassword = validatePassword(password);
-
-      if (!checkPassword) {
-        return res.status(400).json({
-          status: "Failed",
-          result:
-            "Your password must be at least 6 characters with minimal one Lowercase Letter,one Uppercase Letter, Number and Character",
-        });
-      }
 
       const { error } = schema.validate(req.body);
       if (error) {
         return res.status(400).json({
           status: "Bad Request",
           message: error.message,
+        });
+      }
+      const checkPassword = validatePassword(password);
+      if (!checkPassword) {
+        return res.status(400).json({
+          status: "Failed",
+          result:
+            "Your password must be at least 6 characters with minimal one Lowercase Letter,one Uppercase Letter, Number and Character",
         });
       }
 
@@ -169,7 +171,10 @@ module.exports = {
 
       const schema = Joi.object({
         phone: Joi.string(),
+        firstName: Joi.string(),
+        lastName: Joi.string(),
         picture: Joi.string(),
+        email: Joi.string().email(),
       });
 
       const { error } = schema.validate({
@@ -187,7 +192,6 @@ module.exports = {
         {
           ...body,
           picture: file.path,
-          phone: body.phone,
         },
         { where: { id } }
       );
@@ -199,18 +203,7 @@ module.exports = {
       }
       const cari = await User.findOne({
         where: { id },
-        attributes: {
-          exclude: [
-            "id",
-            "createdAt",
-            "updatedAt",
-            "is_admin",
-            "password",
-            "createdAt",
-            "updatedAt",
-            "email",
-          ],
-        },
+        attributes: ["firstName", "lastName", "email", "phone", "picture"],
       });
 
       res.status(201).json({
@@ -281,6 +274,89 @@ module.exports = {
       res.status(200).json(data[x]);
       // console.log(data.length);
       // res.status(200).json(data);
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
+  forgotPass: async (req, res) => {
+    const { email } = req.body;
+    try {
+      const user = await User.findOne({ where: { email } });
+      if (!user)
+        return res.status(404).json({
+          status: "Bad Request",
+          message: "Invalid email , user not found",
+          result: [],
+        });
+      console.log(random.generate(50));
+      const passwordReset = await PasswordReset.create({
+        email,
+        validationCode: random.generate(50),
+        isDone: false,
+      });
+      sendMail(
+        email,
+        "Password Reset",
+        `
+      <h1>Password reset confirmation</h1>
+      <b>Please conmfirm you passwword reset by clicking the link bellow</b>
+      <h2>
+      <a href="https://localhost:5000/api/v1/user/forgotcode?code=${passwordReset.validationCode}">Click Here</a></h2>`
+      );
+      res.status(200).json({
+        status: "success",
+        message:
+          "The email have been seent to reset your password, please check our email",
+        restul: {},
+      });
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
+  resetPassword: async (req, res) => {
+    const { validationCode, password } = req.body;
+    try {
+      const schema = Joi.object({
+        validationCode: Joi.string().required(),
+        password: Joi.string().required(),
+      });
+
+      const { error } = schema.validate(req.body);
+      if (error) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: error.message,
+        });
+      }
+
+      const validate = await PasswordReset.findOne({
+        where: {
+          validationCode,
+          isDone: false,
+        },
+      });
+      if (!validate) {
+        return res.status(404).json({
+          status: "Bad Request",
+          message: "Invalid password confirmation",
+          result: {},
+        });
+      }
+      const pwdHas = hashPassword(password);
+      await User.update(
+        { password: pwdHas },
+        { where: { email: validate.email } }
+      );
+      await PasswordReset.update(
+        { isDone: true },
+        { where: { validationCode } }
+      );
+
+      res.status(200).json({
+        status: "Success",
+        message: "Successfully change the password",
+        result: {},
+      });
     } catch (error) {
       errorHandler(res, error);
     }

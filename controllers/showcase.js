@@ -6,7 +6,6 @@ const {
   ShowcaseType,
   Project,
   Appointment,
-  ServiceType,
   Section,
   BuildingType,
   ProjectType,
@@ -21,7 +20,6 @@ const errorHandler = require("../helpers/error-handler");
 const { Op } = require("sequelize"); //use Op from Sequelize
 const { verifyToken } = require("../helpers/jwt");
 const Joi = require("joi");
-const { validasiData } = require("../helpers/validasiData");
 
 module.exports = {
   getOneShowcase: async (req, res) => {
@@ -375,6 +373,10 @@ module.exports = {
             data[i].isFavorite = false;
           }
       }
+      //sort data agar isFavorite diatas
+      data.sort((a, b) =>
+        b.isFavorite > a.isFavorite ? 1 : a.isFavorite > b.isFavorite ? -1 : 0
+      );
 
       res.status(200).json({
         status: "Success",
