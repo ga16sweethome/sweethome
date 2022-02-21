@@ -584,7 +584,7 @@ module.exports = {
           createdBy: user.id,
           is_shown: false,
         },
-        { transaction: transaction }
+        { transaction }
       );
 
       const querySection = body.section;
@@ -594,19 +594,16 @@ module.exports = {
       const ssJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkProjectType
       const StyleJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkStyle
       const PGallery = []; //untuk bulcreate ( array ) ke database Gallery
+
       const pType = await ProjectType.findAll({ where: { name: queryP } });
       const pTypeId = pType.map((el) => el.id);
-
       for (let i = 0; i < pTypeId.length; i++) {
         PTypeJunk.push({
           showcaseId: createShowcase.id,
           projectTypeId: pTypeId[i],
         });
       }
-
-      const buatJunkP = await ShowcaseJunkProjectType.bulkCreate(PTypeJunk, {
-        transaction: transaction,
-      });
+      await ShowcaseJunkProjectType.bulkCreate(PTypeJunk, { transaction });
 
       const ss = await Section.findAll({ where: { name: querySection } });
       const ssId = ss.map((el) => el.id);
@@ -616,9 +613,7 @@ module.exports = {
           sectionId: ssId[i],
         });
       }
-      const buatSSJunk = await ShowcaseJunkSection.bulkCreate(ssJunk, {
-        transaction: transaction,
-      });
+      await ShowcaseJunkSection.bulkCreate(ssJunk, { transaction });
 
       const style = await Style.findAll({ where: { name: queryS } });
       const styleId = style.map((el) => el.id);
@@ -628,9 +623,7 @@ module.exports = {
           styleId: styleId[i],
         });
       }
-      const buatJunkS = await ShowcaseJunkStyle.bulkCreate(StyleJunk, {
-        transaction: transaction,
-      });
+      await ShowcaseJunkStyle.bulkCreate(StyleJunk, { transaction });
 
       for (let i = 0; i < files.length; i++) {
         PGallery.push({
@@ -639,9 +632,7 @@ module.exports = {
           picture: files[i].path,
         });
       }
-      const buatGallery = await Gallery.bulkCreate(PGallery, {
-        transaction: transaction,
-      });
+      await Gallery.bulkCreate(PGallery, { transaction });
 
       await transaction.commit();
       const result = await Showcase.findOne({
@@ -663,10 +654,12 @@ module.exports = {
     const body = req.body;
     const user = req.user;
     const files = req.files;
+    let transaction;
 
     try {
+      transaction = await sequelize.transaction();
       //validasi apakah filesnya ada atau tidak
-      if (files.length === 0) {
+      if (files.length === 0 || !files) {
         return res.status(400).json({
           status: "Bad Request",
           message: `\"picture\" required files`,
@@ -704,136 +697,54 @@ module.exports = {
         });
       }
 
-      const createShowcase = await Showcase.create({
-        name: body.name,
-        showcaseTypeId: 2,
-        createdBy: user.id,
-        is_shown: false,
-      });
-
-      if (!createShowcase) {
-        return res.status(500).json({
-          status: " Create Showcase failed",
-          message: "Internal Server Error",
-          result: {},
-        });
-      }
-      const queryP = body.projectType;
-      const PTypeJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkProjectType
-      if (queryP) {
-        const pType = await ProjectType.findAll({ where: { name: queryP } });
-        //validasi jika tidak ada data ProjectType
-        if (!pType) {
-          return res.status(400).json({
-            status: "Bad Request",
-            message: "Project Type is not found",
-          });
-        }
-        const pTypeId = pType.map((el) => el.id);
-        for (let i = 0; i < pTypeId.length; i++) {
-          //validasi isi ProjectType.id
-          if (
-            pTypeId[i] === null ||
-            pTypeId[i] === undefined ||
-            queryP.length != pTypeId.length
-          ) {
-            return res.status(400).json({
-              Status: "Bad request",
-              Message: "ProjectType  is not match",
-            });
-          }
-        }
-
-        for (let i = 0; i < pTypeId.length; i++) {
-          PTypeJunk.push({
-            showcaseId: createShowcase.id,
-            projectTypeId: pTypeId[i],
-          });
-        }
-      }
-      const buatJunkP = await ShowcaseJunkProjectType.bulkCreate(PTypeJunk);
-      //validasi gagal BulkCreate SHowcaseJunkProjectType
-      if (!buatJunkP) {
-        return res.send("gagal");
-      }
+      const createShowcase = await Showcase.create(
+        {
+          name: body.name,
+          showcaseTypeId: 2,
+          createdBy: user.id,
+          is_shown: false,
+        },
+        { transaction }
+      );
 
       const querySection = body.section;
-      const ssJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkProjectType
-      if (querySection) {
-        const pSection = await Section.findAll({
-          where: { name: querySection },
-        });
-        //validasi jika tidak ada data Section
-        if (!pSection) {
-          return res.status(400).json({
-            status: "Bad Request",
-            message: "Section is not found",
-          });
-        }
-        const ssId = pSection.map((el) => el.id);
-
-        for (let i = 0; i < ssId.length; i++) {
-          //validasi jika is section.id not null, not undefined  )
-          if (
-            ssId[i] === undefined ||
-            ssId[i] === null ||
-            querySection.length != ssId.length
-          ) {
-            return res.status(400).json({
-              Status: "Bad request",
-              Message: "Setion is not match",
-            });
-          }
-        }
-        for (let i = 0; i < pSection.length; i++) {
-          ssJunk.push({
-            showcaseId: createShowcase.id,
-            sectionId: ssId[i],
-          });
-        }
-      }
-      const buatSSJunk = await ShowcaseJunkSection.bulkCreate(ssJunk);
-      if (!buatSSJunk) {
-        res.send("gagal buat section ID");
-      }
-
+      const queryP = body.projectType;
       const queryS = body.styles;
+      const PTypeJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkProjectType
+      const ssJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkProjectType
       const StyleJunk = []; //untuk bulcreate ( array ) ke database ShowcaseJunkStyle
-      if (queryS) {
-        const style = await Style.findAll({ where: { name: queryS } });
-        if (!style) {
-          return res.status(400).json({
-            status: "Bad Request",
-            message: "Styles is not found",
-          });
-        }
-        const styleId = style.map((el) => el.id);
-        for (let i = 0; i < styleId.length; i++) {
-          //validasi jika is section.id not null, not undefined  )
-          if (
-            styleId[i] === undefined ||
-            styleId[i] === null ||
-            queryS.length != styleId.length
-          ) {
-            return res.status(400).json({
-              Status: "Bad request",
-              Message: "Styles is not match",
-            });
-          }
-        }
-        for (let i = 0; i < styleId.length; i++) {
-          StyleJunk.push({
-            showcaseId: createShowcase.id,
-            styleId: styleId[i],
-          });
-        }
-      }
-      const buatJunkS = await ShowcaseJunkStyle.bulkCreate(StyleJunk);
-      if (!buatJunkS) {
-        res.send("gagal");
-      }
-
       const PGallery = []; //untuk bulcreate ( array ) ke database Gallery
+
+      const pType = await ProjectType.findAll({ where: { name: queryP } });
+      const pTypeId = pType.map((el) => el.id);
+      for (let i = 0; i < pTypeId.length; i++) {
+        PTypeJunk.push({
+          showcaseId: createShowcase.id,
+          projectTypeId: pTypeId[i],
+        });
+      }
+      await ShowcaseJunkProjectType.bulkCreate(PTypeJunk, { transaction });
+
+      const ss = await Section.findAll({ where: { name: querySection } });
+      const ssId = ss.map((el) => el.id);
+      for (let i = 0; i < ss.length; i++) {
+        ssJunk.push({
+          showcaseId: createShowcase.id,
+          sectionId: ssId[i],
+        });
+      }
+      await ShowcaseJunkSection.bulkCreate(ssJunk, { transaction });
+
+      const style = await Style.findAll({ where: { name: queryS } });
+      const styleId = style.map((el) => el.id);
+      for (let i = 0; i < styleId.length; i++) {
+        StyleJunk.push({
+          showcaseId: createShowcase.id,
+          styleId: styleId[i],
+        });
+      }
+      await ShowcaseJunkStyle.bulkCreate(StyleJunk, { transaction });
+
       for (let i = 0; i < files.length; i++) {
         PGallery.push({
           showcaseId: createShowcase.id,
@@ -841,11 +752,9 @@ module.exports = {
           picture: files[i].path,
         });
       }
-      const buatGallery = await Gallery.bulkCreate(PGallery);
-      if (!buatGallery) {
-        res.send("gagal");
-      }
+      await Gallery.bulkCreate(PGallery, { transaction });
 
+      await transaction.commit();
       const result = await Showcase.findOne({
         where: {
           id: createShowcase.id,
@@ -857,6 +766,7 @@ module.exports = {
         result: result,
       });
     } catch (error) {
+      if (transaction) transaction.rollback();
       errorHandler(res, error);
     }
   },
