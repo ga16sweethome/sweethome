@@ -112,7 +112,6 @@ module.exports = {
           message: "Data Not Found",
         });
       }
-
       // check favorite jika ada req.user from token
       if (req.user) {
         const checkfavorite = await Favorite.findAll({
