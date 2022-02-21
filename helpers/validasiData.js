@@ -1,16 +1,16 @@
 module.exports = {
-  validasi: (data, query) => {
-    let x = 0;
+  validasiData: (data, query) => {
+    //validasi length data untuk bulkcreate dan query
+    if (data.length != query.length) return false;
     for (let i = 0; i < data.length; i++) {
       if (
         data.length != query.length ||
-        data.id[i] === null ||
-        data.id[i] === undefined
+        data[i] === null ||
+        data[i] === undefined
       ) {
-        x = 1;
-        return x;
+        return false;
       }
     }
-    return x;
+    return true;
   },
 };
