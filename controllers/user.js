@@ -5,6 +5,7 @@ const {
   ShowcaseJunkSection,
   Section,
   PasswordReset,
+  LastActivity,
 } = require("../models");
 const errorHandler = require("../helpers/error-handler");
 const Joi = require("joi"); //use joi validation NPM
@@ -156,6 +157,7 @@ module.exports = {
       errorHandler(res, error);
     }
   },
+
   updateProfile: async (req, res) => {
     const body = req.body;
     const file = req.file;
@@ -215,6 +217,7 @@ module.exports = {
       errorHandler(res, error);
     }
   },
+
   getPicture: async (req, res) => {
     const { section } = req.query;
     try {
@@ -313,6 +316,7 @@ module.exports = {
       errorHandler(res, error);
     }
   },
+
   resetPassword: async (req, res) => {
     const { validationCode, password } = req.body;
     try {
@@ -356,6 +360,106 @@ module.exports = {
         status: "Success",
         message: "Successfully change the password",
         result: {},
+      });
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
+
+  createAdmin: async (req, res) => {
+    const { firstName, lastName, email, password } = req.body;
+    try {
+      const schema = Joi.object({
+        firstName: Joi.string().required(),
+        lastName: Joi.string().required(),
+        email: Joi.string().email().required(),
+        password: Joi.string().min(6).required(),
+      });
+      const { error } = schema.validate(req.body);
+      if (error) {
+        return res.status(400).json({
+          status: "Bad Request",
+          message: error.message,
+        });
+      }
+      const checkPassword = validatePassword(password);
+      if (!checkPassword) {
+        return res.status(400).json({
+          status: "Failed",
+          result:
+            "Your password must be at least 6 characters with minimal one Lowercase Letter,one Uppercase Letter, Number and Character",
+        });
+      }
+      const check = await User.findOne({ where: { email } });
+      if (check) {
+        return res.status(401).json({
+          status: "Failed",
+          message: "This Email Already Used",
+        });
+      }
+      const passwordhashed = hashPassword(password);
+      hashPassword(password);
+      const create = await User.create({
+        firstName,
+        lastName,
+        email,
+        password: passwordhashed,
+        is_admin: true,
+      });
+
+      if (!create) {
+        return res.status(401).json({
+          status: "Failed",
+          message: "Failed to create admin",
+          result: { create },
+        });
+      }
+
+      const token = generateToken({
+        id: create.id,
+        email: create.email,
+        name: `${create.firstName} ${create.lastName}`,
+        picture: create.picture,
+        phone: create.phone,
+        is_admin: true,
+      });
+
+      res.status(201).json({
+        status: "Success",
+        message: "Successfully create Admin",
+        result: token,
+      });
+    } catch (error) {
+      errorHandler(res, error);
+    }
+  },
+
+  getCustomer: async (req, res) => {
+    let { order } = req.query;
+    try {
+      const cari = await User.findAll({
+        where: { is_admin: false },
+        order: [
+          [
+            { model: LastActivity, as: "lastActivity" },
+            "time_login",
+            order === "DESC" ? "DESC" : order === "ASC" ? "ASC" : "DESC",
+          ],
+        ],
+        include: [
+          {
+            model: LastActivity,
+            as: "lastActivity",
+            attributes: ["time_login", "submitted"],
+          },
+        ],
+        attributes: {
+          exclude: ["password", "updatedAt", "createdAt"],
+        },
+      });
+
+      res.status(200).json({
+        result: cari,
       });
     } catch (error) {
       errorHandler(res, error);

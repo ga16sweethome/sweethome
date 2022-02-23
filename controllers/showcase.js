@@ -344,7 +344,7 @@ module.exports = {
         ],
       });
       const jumlahPage = Math.ceil(hitung / 8);
-
+      //ngerubah jadi data array
       data = JSON.parse(JSON.stringify(data));
 
       let isi = [];

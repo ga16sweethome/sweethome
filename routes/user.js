@@ -6,8 +6,9 @@ const {
   updateProfile,
   forgotPass,
   resetPassword,
+  createAdmin,
 } = require("../controllers/user");
-const { isLogin } = require("../middlewares/userAuth");
+const { isLogin, isAdmin } = require("../middlewares/userAuth");
 const { uploadCloudinary } = require("../middlewares/uploadFile");
 const passport = require("../config/passport");
 const {
@@ -21,6 +22,7 @@ router.post("/login", login);
 router.post("/profile", isLogin, uploadCloudinary("picture"), updateProfile); //update profiles
 router.post("/forgot", forgotPass);
 router.post("/reset", resetPassword);
+router.post("/admin", isAdmin, createAdmin);
 
 router.get(
   "/facebook",
