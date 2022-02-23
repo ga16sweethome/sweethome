@@ -1,4 +1,3 @@
 
-release : npx sequelize db:migrate
 
-web: node server.js
+web: npx sequelize db:migrate && node server.js
