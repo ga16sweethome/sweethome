@@ -16,7 +16,6 @@ module.exports = (sequelize, DataTypes) => {
       Appointment.belongsTo(models.BuildingType, {
         foreignKey: "buildingTypeId",
         as: "buildingType",
-        foreignkey: "buildingTypeId",
       });
       Appointment.belongsTo(models.ServiceType, {
         foreignKey: "serviceTypeId",

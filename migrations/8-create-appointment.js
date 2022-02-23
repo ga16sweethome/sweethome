@@ -51,7 +51,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      areSize: {
+      areaSize: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
