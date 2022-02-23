@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert(
-      "ShowcaseJunkSection",
+      "ShowcaseJunkSections",
       [
         {
           showcaseId: 1,
