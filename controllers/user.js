@@ -59,7 +59,7 @@ module.exports = {
       if (!checkPassword) {
         return res.status(400).json({
           status: "Failed",
-          result:
+          message:
             "Your password must be at least 6 characters with minimal one Lowercase Letter,one Uppercase Letter, Number and Character",
         });
       }
@@ -95,8 +95,9 @@ module.exports = {
       });
 
       return res.status(201).json({
-        msg: `Registrasi Success`,
-        result: { token },
+        status: "Succes",
+        message: `Registrasi Success`,
+        result: token,
       });
     } catch (error) {
       errorHandler(res, error);
@@ -129,7 +130,6 @@ module.exports = {
         return res.status(401).json({
           status: "Unauthorized",
           message: "Invalid email and password combination",
-          result: {},
         });
       }
       const checkPassword = comparePassword(password, user.password);
@@ -273,10 +273,12 @@ module.exports = {
         ],
       });
       let x = Math.floor(Math.random() * data.length);
-      console.log(x);
-      res.status(200).json(data[x]);
-      // console.log(data.length);
-      // res.status(200).json(data);
+
+      res.status(200).json({
+        status: "Success",
+        message: "Successfully retireve the data",
+        result: data[x],
+      });
     } catch (error) {
       errorHandler(res, error);
     }

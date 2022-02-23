@@ -18,3 +18,5 @@ app.get("/", async (req, res) => {
 app.use("/api/v1", router);
 
 app.listen(port, console.log(`localhost:${port}`));
+
+module.exports = app;

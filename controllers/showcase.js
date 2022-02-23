@@ -387,9 +387,16 @@ module.exports = {
     }
   },
   getAllShowcaseAdmin: async (req, res) => {
+    let { sort } = req.query;
     try {
       const cari = await Showcase.findAll({
         include: [{ model: ShowcaseType, as: "showcaseType" }],
+        order: [
+          [
+            "createdAt",
+            sort === "DESC" ? "DESC" : sort === "ASC" ? "ASC" : "DESC",
+          ],
+        ],
       });
       res.status(200).json({
         status: "Succes",
