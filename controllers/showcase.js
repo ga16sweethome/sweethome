@@ -187,87 +187,89 @@ module.exports = {
         offset: (page - 1) * 8,
         where: {
           is_shown: true,
-          ...keywordsQuery,
+          // ...keywordsQuery,
         },
         attributes: ["id", "name", "createdAt"],
         order: [["id", "ASC"]],
-        include: [
-          {
-            model: Gallery,
-            as: "gallery",
-            attributes: ["title", "picture"],
-          },
-          {
-            model: ShowcaseJunkSection,
-            as: "showcaseJunkSection",
-            attributes: ["id"],
-            include: [
-              {
-                model: Section,
-                as: "section",
-                required: true,
-                where:
-                  isiSection.length > 0
-                    ? {
-                        name: isiSection,
-                      }
-                    : {},
-                attributes: ["name"],
-              },
-            ],
-          },
-          {
-            model: ShowcaseJunkProjectType,
-            as: "showcaseJunkProjectType",
-            attributes: ["id"],
-            include: [
-              {
-                model: ProjectType,
-                as: "projectType",
-                attributes: ["name"],
-              },
-            ],
-          },
-          {
-            model: ShowcaseJunkStyle,
-            as: "showcaseJunkstyle",
-            attributes: ["id"],
-            include: [
-              {
-                model: Style,
-                as: "style",
-                required: true,
-                attributes: ["name"],
-                where:
-                  isiStyle.length > 0
-                    ? {
-                        name: isiStyle,
-                      }
-                    : {},
-              },
-            ],
-          },
-          {
-            model: Project,
-            as: "project",
+        // include: [
+        //   {
+        //     model: Gallery,
+        //     as: "gallery",
+        //     attributes: ["title", "picture"],
+        //   },
+        //   {
+        //     model: ShowcaseJunkSection,
+        //     as: "showcaseJunkSection",
+        //     attributes: ["id"],
+        //     include: [
+        //       {
+        //         model: Section,
+        //         as: "section",
+        //         required: true,
+        //         where:
+        //           isiSection.length > 0
+        //             ? {
+        //                 name: isiSection,
+        //               }
+        //             : {},
+        //         attributes: ["name"],
+        //       },
+        //     ],
+        //   },
+        //   {
+        //     model: ShowcaseJunkProjectType,
+        //     as: "showcaseJunkProjectType",
+        //     attributes: ["id"],
+        //     include: [
+        //       {
+        //         model: ProjectType,
+        //         as: "projectType",
+        //         attributes: ["name"],
+        //       },
+        //     ],
+        //   },
+        //   {
+        //     model: ShowcaseJunkStyle,
+        //     as: "showcaseJunkstyle",
+        //     attributes: ["id"],
+        //     include: [
+        //       {
+        //         model: Style,
+        //         as: "style",
+        //         required: true,
+        //         attributes: ["name"],
+        //         where:
+        //           isiStyle.length > 0
+        //             ? {
+        //                 name: isiStyle,
+        //               }
+        //             : {},
+        //       },
+        //     ],
+        //   },
+        //   {
+        //     model: Project,
+        //     as: "project",
 
-            attributes: [
-              "appointmentId",
-              "totalPrice",
-              "totalArea",
-              "totalDuration",
-            ],
-            include: [
-              {
-                model: Appointment,
-                as: "appointment",
-                attributes: ["address"],
-              },
-            ],
-          },
-        ],
+        //     attributes: [
+        //       "appointmentId",
+        //       "totalPrice",
+        //       "totalArea",
+        //       "totalDuration",
+        //     ],
+        //     include: [
+        //       {
+        //         model: Appointment,
+        //         as: "appointment",
+        //         attributes: ["address"],
+        //       },
+        //     ],
+        //   },
+        // ],
       });
-
+      return res.status(200).json({
+        result: data,
+      });
       let hitung = await Showcase.count({
         distinct: true,
         where: {
