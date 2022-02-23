@@ -43,6 +43,7 @@ module.exports = {
         type: Sequelize.DATEONLY,
         allowNull: false,
       },
+
       timeslotId: {
         type: Sequelize.INTEGER,
         allowNull: false,
