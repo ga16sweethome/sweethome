@@ -16,25 +16,25 @@ module.exports = {
   getAll: async (req, res) => {
     try {
       const data = req.user;
-      const result = await Appointment.findAll({ 
+      const result = await Appointment.findAll({
         where: { userId: data.id },
         include: [
           {
             model: BuildingType,
             as: "buildingType",
-            attributes: ["id", "createdAt", "updatedAt"]
+            attributes: ["id", "createdAt", "updatedAt"],
           },
           {
             model: ServiceType,
             as: "serviceType",
-            attributes: ["id", "createdAt", "updatedAt"]
+            attributes: ["id", "createdAt", "updatedAt"],
           },
           {
             model: Timeslot,
             as: "timeslot",
-            attributes: ["id", "createdAt", "updatedAt"]
-          }
-        ]
+            attributes: ["id", "createdAt", "updatedAt"],
+          },
+        ],
       });
       if (!result) {
         return res.status(401).json({
