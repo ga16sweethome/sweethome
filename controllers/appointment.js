@@ -22,17 +22,17 @@ module.exports = {
           {
             model: BuildingType,
             as: "buildingType",
-            attributes: ["id", "createdAt", "updatedAt"]
+            attributes: ["name"]
           },
           {
             model: ServiceType,
             as: "serviceType",
-            attributes: ["id", "createdAt", "updatedAt"]
+            attributes: ["name"]
           },
           {
             model: Timeslot,
             as: "timeslot",
-            attributes: ["id", "createdAt", "updatedAt"]
+            attributes: ["name"]
           }
         ]
       });
