@@ -32,7 +32,6 @@ module.exports = {
           {
             model: Timeslot,
             as: "timeslot",
-            attributes: ["name"]
           }
         ]
       });
