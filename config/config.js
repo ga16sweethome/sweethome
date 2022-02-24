@@ -10,9 +10,10 @@ module.exports = {
   test: {
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
-    database: "sweethome_test",
+    database: "apaaja",
     host: process.env.POSTGRES_HOST,
     dialect: "postgres",
+    logging: false,
   },
   production: {
     use_env_variable: "DATABASE_URL",

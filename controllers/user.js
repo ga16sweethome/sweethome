@@ -461,6 +461,8 @@ module.exports = {
       });
 
       res.status(200).json({
+        status: "Success",
+        message: "Successfully retrieve the data",
         result: cari,
       });
     } catch (error) {
