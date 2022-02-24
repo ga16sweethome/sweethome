@@ -36,7 +36,7 @@ module.exports = {
           }
         ],
         attributes: {
-            exclude: ["buildingTypeId","serviceTypeId","timeslotId"]
+            exclude: ["buildingTypeId","serviceTypeId","timeslotId","userId"]
         }
       });
       if (!result) {
