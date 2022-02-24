@@ -32,8 +32,12 @@ module.exports = {
           {
             model: Timeslot,
             as: "timeslot",
+            attributes: ["time"]
           }
-        ]
+        ],
+        attributes: {
+            exclude: ["buildingTypeId","serviceTypeId","timeslotId"]
+        }
       });
       if (!result) {
         return res.status(401).json({
