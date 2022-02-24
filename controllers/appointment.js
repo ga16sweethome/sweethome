@@ -22,19 +22,36 @@ module.exports = {
           {
             model: BuildingType,
             as: "buildingType",
+<<<<<<< HEAD
             attributes: ["id", "createdAt", "updatedAt"],
+=======
+            attributes: ["name"]
+>>>>>>> cdd3c1fdcd71c85eedc051eda5d396b211cbd5aa
           },
           {
             model: ServiceType,
             as: "serviceType",
+<<<<<<< HEAD
             attributes: ["id", "createdAt", "updatedAt"],
+=======
+            attributes: ["name"]
+>>>>>>> cdd3c1fdcd71c85eedc051eda5d396b211cbd5aa
           },
           {
             model: Timeslot,
             as: "timeslot",
+<<<<<<< HEAD
             attributes: ["id", "createdAt", "updatedAt"],
           },
         ],
+=======
+            attributes: ["time"]
+          }
+        ],
+        attributes: {
+            exclude: ["buildingTypeId","serviceTypeId","timeslotId","userId"]
+        }
+>>>>>>> cdd3c1fdcd71c85eedc051eda5d396b211cbd5aa
       });
       if (!result) {
         return res.status(401).json({
