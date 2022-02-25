@@ -76,6 +76,7 @@ module.exports = {
         lastName,
         email,
         password: passwordhashed,
+        is_admin: false,
       });
       if (!data) {
         return res.status(401).json({

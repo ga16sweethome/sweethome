@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class PasswordReset extends Model {
     /**
@@ -12,18 +10,21 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       PasswordReset.belongsTo(models.User, {
-        foreignKey: "userId",
+        foreignKey: "email",
         as: "user",
       });
     }
   }
-  PasswordReset.init({
-    validationCode: DataTypes.STRING,
-    email: DataTypes.STRING,
-    isDone: DataTypes.BOOLEAN
-  }, {
-    sequelize,
-    modelName: 'PasswordReset',
-  });
+  PasswordReset.init(
+    {
+      validationCode: DataTypes.STRING,
+      email: DataTypes.STRING,
+      isDone: DataTypes.BOOLEAN,
+    },
+    {
+      sequelize,
+      modelName: "PasswordReset",
+    }
+  );
   return PasswordReset;
 };
