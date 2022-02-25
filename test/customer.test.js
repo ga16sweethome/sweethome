@@ -1,30 +1,31 @@
 const app = require("../app");
 const supertest = require("supertest");
 const { User } = require("../models");
-
 const { hashPassword } = require("../helpers/bcrypt");
+
 let token;
+const user = {
+  firstName: "admin",
+  lastName: "adminadmin",
+  email: "admin@admin.com",
+  password: "adminadmin",
+  is_admin: true,
+};
 
 //reset table user
 afterAll((done) => {
-  User.sync({force : true}).then((res) => {
+  User.sync({ force: true }).then((res) => {
     done();
   });
 });
 
 //get customer success
 test("GET /api/v1/customer", async () => {
-  const user = {
-    firstName: "admin",
-    lastName: "adminadmin",
-    email: "admin@admin.com",
-    password: "adminadmin",
-    is_admin: true,
-  };
   await User.create({
     ...user,
     password: hashPassword(user.password),
   });
+
   await supertest(app)
     .post("/api/v1/user/login")
     .send({ email: user.email, password: user.password })

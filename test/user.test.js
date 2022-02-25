@@ -1,7 +1,9 @@
-jest.setTimeout(30000);
+jest.setTimeout(); //set time for jest
 const app = require("../app");
 const supertest = require("supertest");
 const { User } = require("../models");
+const { hashPassword } = require("../helpers/bcrypt");
+const { verifyToken } = require("../helpers/jwt");
 
 let token;
 const data = {
@@ -9,26 +11,6 @@ const data = {
   lastName: "Anggora",
   email: "affandiagung@gmail.com",
   password: "Admin123#",
-};
-const datafirstNamesalah = {
-  firstName: 2,
-  lastName: "Anggora",
-  email: "affandiagung@gmail.com",
-  password: "Admin123#",
-};
-
-const dataemailsalah = {
-  firstName: "Kucing",
-  lastName: "Anggora",
-  email: "affandiagung",
-  password: "Admin123#",
-};
-
-const datapasswordsalah = {
-  firstName: "Kucing",
-  lastName: "Anggora",
-  email: "affandiagung@gmail.com",
-  password: "admin",
 };
 
 const message = `\"password\" length must be at least 6 characters long`;
@@ -40,7 +22,7 @@ afterAll((done) => {
   });
 });
 
-//test register sukses
+//test register success
 test("REGISTER /api/v1/user/register", async () => {
   await supertest(app)
     .post("/api/v1/user/register")
@@ -53,8 +35,34 @@ test("REGISTER /api/v1/user/register", async () => {
     });
 });
 
+//test getOne sukses
+test("REGISTER /api/v1/user", async () => {
+  await supertest(app)
+    .post("/api/v1/user/login")
+    .send({ email: data.email, password: data.password })
+    .then((res) => {
+      token = res.body.result.token;
+    });
+
+  await supertest(app)
+    .get("/api/v1/user")
+    .set("Authorization", "Bearer " + token)
+    // .expect(200)
+    .then((res) => {
+      console.log(res.body);
+      expect(res.body.message).toBeTruthy();
+      expect(res.body.status).toBeTruthy();
+    });
+});
+
 //register failed firstName salah
 test("REGISTER /api/v1/user/register", async () => {
+  const datafirstNamesalah = {
+    firstName: 2,
+    lastName: "Anggora",
+    email: "affandiagung@gmail.com",
+    password: "Admin123#",
+  };
   await supertest(app)
     .post("/api/v1/user/register")
     .send(datafirstNamesalah)
@@ -67,6 +75,12 @@ test("REGISTER /api/v1/user/register", async () => {
 
 //test register failed email
 test("REGISTER /api/v1/user/register", async () => {
+  const dataemailsalah = {
+    firstName: "Kucing",
+    lastName: "Anggora",
+    email: "affandiagung",
+    password: "Admin123#",
+  };
   await supertest(app)
     .post("/api/v1/user/register")
     .send(dataemailsalah)
@@ -79,6 +93,12 @@ test("REGISTER /api/v1/user/register", async () => {
 
 //test register failed password
 test("REGISTER /api/v1/user/register", async () => {
+  const datapasswordsalah = {
+    firstName: "Kucing",
+    lastName: "Anggora",
+    email: "affandiagung@gmail.com",
+    password: "admin",
+  };
   await supertest(app)
     .post("/api/v1/user/register")
     .send(datapasswordsalah)
@@ -93,7 +113,7 @@ test("REGISTER /api/v1/user/register", async () => {
 test("REGISTER /api/v1/user/register", async () => {
   await supertest(app)
     .post("/api/v1/user/register")
-    .send(data)
+    .send({ ...data })
     .expect(401)
     .then((res) => {
       expect(res.body.status).toBeTruthy();
@@ -103,14 +123,9 @@ test("REGISTER /api/v1/user/register", async () => {
 
 //test login sukses
 test("LOGIN /api/v1/user/login", async () => {
-  let login = {
-    email: data.email,
-    password: data.password,
-  };
-
   await supertest(app)
     .post("/api/v1/user/login")
-    .send(login)
+    .send({ email: data.email, password: data.password })
     .expect(200)
     .then((res) => {
       token = res.body.result.token;
@@ -183,11 +198,11 @@ test("LOGIN /api/v1/user/login", async () => {
     });
 });
 
-//test getpicture success
+//test getpicture success with query
 test("GETPICTURE /api/v1/showcase/home/pic", async () => {
   await supertest(app)
     .get("/api/v1/showcase/home/pic")
-    .query("Bedroom")
+    .query({ section: "Bedroom" })
     .expect(200)
     .then((res) => {
       expect(res.body.status).toBeTruthy();

@@ -32,7 +32,11 @@ module.exports = {
         },
       });
 
-      res.status(200).json(find);
+      res.status(200).json({
+        status: "Success",
+        message: "Successfully retrieve the data",
+        result: find,
+      });
     } catch (error) {
       errorHandler(res, error);
     }
@@ -79,7 +83,7 @@ module.exports = {
         password: passwordhashed,
       });
       if (!data) {
-        return res.status(401).json({
+        return res.status(500).json({
           status: "Failed",
           message: "Failed to register",
         });
