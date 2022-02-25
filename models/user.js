@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         as: "lastActivity",
       });
       User.hasMany(models.PasswordReset, {
-        foreignKey: "userId",
+        foreignKey: "email",
         as: "passwordReset",
       });
     }
