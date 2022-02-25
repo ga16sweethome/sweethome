@@ -15,33 +15,56 @@ const joi = require("joi").extend(require("@joi/date"));
 module.exports = {
   getAll: async (req, res) => {
     try {
-      const data = req.user;
-      const result = await Appointment.findAll({ 
-        where: { userId: data.id },
+      const user = req.user;
+      let data = await Appointment.findAll({
+        where: { userId: user.id },
         include: [
           {
             model: BuildingType,
             as: "buildingType",
-            attributes: ["id", "createdAt", "updatedAt"]
+            attributes: ["name"]
           },
           {
             model: ServiceType,
             as: "serviceType",
-            attributes: ["id", "createdAt", "updatedAt"]
+            attributes: ["name"]
           },
           {
             model: Timeslot,
             as: "timeslot",
-            attributes: ["id", "createdAt", "updatedAt"]
+            attributes: ["time"]
           }
-        ]
+        ],
+        attributes: {
+            exclude: ["buildingTypeId","serviceTypeId","timeslotId","userId"]
+        },
       });
-      if (!result) {
+      data = JSON.parse(JSON.stringify(data))
+      if (!data) {
         return res.status(401).json({
           message: "User Don't Have Any Appointment",
           result: {},
         });
       }
+
+      const appointmentId = data.map(el => el.id)
+      let junk = await AppointmentJunkSection.findAll({
+        where: { appointmentId },
+        include: [
+          {
+            model: Section,
+            as: "section",
+            attributes: ["name"]
+          }
+        ],
+      })
+      junk = JSON.parse(JSON.stringify(junk))
+      const result = data.map(el => {
+        el.section = junk.filter( item => item.appointmentId == el.id ).map(el => el.section.name)
+        return el
+      })
+    
+
       res.status(200).json(result);
     } catch (error) {
       errorHandler(res, error);

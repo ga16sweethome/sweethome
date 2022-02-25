@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "lastActivity",
       });
+      User.hasMany(models.PasswordReset, {
+        foreignKey: "userId",
+        as: "passwordReset",
+      });
     }
   }
   User.init(
