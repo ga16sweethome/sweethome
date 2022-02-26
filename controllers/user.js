@@ -299,7 +299,6 @@ module.exports = {
           message: "Invalid email , user not found",
           result: [],
         });
-
       const passwordReset = await PasswordReset.create({
         email,
         validationCode: random.generate(50),
