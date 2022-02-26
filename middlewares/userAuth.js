@@ -31,7 +31,6 @@ module.exports = {
       const user = await User.findOne({
         where: {
           id: decoded.id,
-          is_admin: false,
         },
       });
 
