@@ -15,9 +15,8 @@ const {
   validatePassword,
 } = require("../helpers/bcrypt");
 const { generateToken } = require("../helpers/jwt");
-const { Op } = require("sequelize"); //use Op from Sequelize
 const random = require("randomstring");
-const sendMail = require("../helpers/mail-sender");
+const { sendMail } = require("../helpers/mail-sender");
 
 module.exports = {
   getOne: async (req, res) => {

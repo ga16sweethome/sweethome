@@ -26,6 +26,26 @@ test("REGISTER /api/v1/user/register", async () => {
     firstName: "Kucing",
     lastName: "Anggora",
     email: "affandiagung@gmail.com",
+    password: "admin35",
+  };
+  await supertest(app)
+    .post("/api/v1/user/register")
+    .send(datapasswordsalah)
+    .expect(400)
+    .then((res) => {
+      expect(res.body.status).toBe("Failed");
+      expect(res.body.message).toBe(
+        "Your password must be at least 6 characters with minimal one Lowercase Letter,one Uppercase Letter, Number and Character"
+      );
+    });
+});
+
+//test register Bad Request  schema
+test("REGISTER /api/v1/user/register", async () => {
+  const datapasswordsalah = {
+    firstName: "Kucing",
+    lastName: "Anggora",
+    email: "affandiagung@gmail.com",
     password: "admin",
   };
   await supertest(app)
@@ -33,8 +53,8 @@ test("REGISTER /api/v1/user/register", async () => {
     .send(datapasswordsalah)
     .expect(400)
     .then((res) => {
-      expect(res.body.status).toBeTruthy();
-      expect(res.body.message).toBe(message);
+      expect(res.body.status).toBe("Bad Request");
+      expect(res.body.message).toBeTruthy();
     });
 });
 
@@ -104,7 +124,7 @@ test("LOGIN /api/v1/user/login", async () => {
 //test login  failed password tidak match
 test("LOGIN /api/v1/user/login", async () => {
   let login = {
-    email: "affandiagung@gmail.com",
+    email: "emailsalah@gmail.com",
     password: "Admin321#",
   };
   await supertest(app)
@@ -112,8 +132,24 @@ test("LOGIN /api/v1/user/login", async () => {
     .send(login)
     .expect(401)
     .then((res) => {
-      expect(res.body.status).toBeTruthy();
-      expect(res.body.message).toBeTruthy();
+      expect(res.body.status).toBe("Unauthorized");
+      expect(res.body.message).toBe("Invalid email and password combination");
+    });
+});
+
+//test login  failed password tidak match
+test("LOGIN /api/v1/user/login", async () => {
+  let login = {
+    email: "affandiagung@gmail.com",
+    password: "PasswordSalah123#",
+  };
+  await supertest(app)
+    .post("/api/v1/user/login")
+    .send(login)
+    .expect(401)
+    .then((res) => {
+      expect(res.body.status).toBe("Unauthorized");
+      expect(res.body.message).toBe("Incorrect Username or Password");
     });
 });
 
@@ -133,13 +169,12 @@ test("GETPICTURE /api/v1/showcase/home/pic", async () => {
 test("FORGOTPASSWORD /api/v1/user/forgot", async () => {
   let cari = await User.findAll({ where: { email: data.email } });
   cari = JSON.parse(JSON.stringify(cari));
-  console.log(cari);
+
   await supertest(app)
     .post("/api/v1/user/forgot")
     .send({ email: data.email })
     // .expect(200)
     .then((res) => {
-      console.log(res.body);
       expect(res.body.status).toBeTruthy();
       expect(res.body.message).toBeTruthy();
     });
