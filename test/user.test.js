@@ -153,6 +153,24 @@ test("LOGIN /api/v1/user/login", async () => {
     });
 });
 
+//test update Profile
+test("UPDATE PROFILE /api/v1/user/profile", async () => {
+  let update = {
+    phone: "0858",
+    firstName: "jaka",
+    lastName: "jaya",
+    picture: "E:/Agung/Lain2/PNG/Filehuruf wa.png",
+    email: "affanid@gmail.com",
+  };
+  await supertest(app)
+    .post("/api/v1/user/profile")
+    .set("Authorization", token)
+    .send(update)
+    .then((res) => {
+      console.log(res.body);
+    });
+});
+
 //test getpicture success with query
 test("GETPICTURE /api/v1/showcase/home/pic", async () => {
   await supertest(app)
