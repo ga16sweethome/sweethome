@@ -259,8 +259,12 @@ module.exports = {
         ],
       });
       let x = Math.floor(Math.random() * data.length);
-      console.log(x);
-      res.status(200).json(data[x]);
+
+      res.status(200).json({
+        status: "Success",
+        message: "Successfully retreive the data",
+        result: data[x],
+      });
     } catch (error) {
       errorHandler(res, error);
     }
@@ -369,7 +373,7 @@ module.exports = {
       if (!checkPassword) {
         return res.status(400).json({
           status: "Failed",
-          result:
+          message:
             "Your password must be at least 6 characters with minimal one Lowercase Letter,one Uppercase Letter, Number and Character",
         });
       }
