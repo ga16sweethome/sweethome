@@ -145,7 +145,7 @@ module.exports = {
             id,
             userId,
             status: {
-              [Op.not]: [-1, 3],
+              [Op.not]: [-1, 2, 3],
             },
           },
         }
