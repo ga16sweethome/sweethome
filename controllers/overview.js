@@ -119,7 +119,7 @@ module.exports = {
 
       let cari = await Project.findAll({
         where: {
-          completedAt: {
+          updatedAt: {
             [Op.between]: [start, end],
           },
         },
