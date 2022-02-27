@@ -16,10 +16,13 @@ module.exports = {
       //const data = req.user // DARI TOKEN
       const data = await Favorite.findAll({
         where: { userId: req.user.id },
-        attributes: ["name"],
+        attributes: {
+          exclude: ["id", "createdAt", "updatedAt"],
+        },
         include: {
           model: Showcase,
           as: "showcase",
+          attributes: ["name"],
           include: [
             {
               model: Gallery,
