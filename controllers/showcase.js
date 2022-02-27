@@ -699,7 +699,7 @@ module.exports = {
       if (body.title.length != files.length) {
         return res.status(400).json({
           status: "Bad Request",
-          message: "please fill all the data that required",
+          message: "Please fill all the data that required",
           result: {},
         });
       }
