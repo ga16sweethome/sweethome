@@ -1,5 +1,7 @@
-const { Favorite, Showcase } = require("../models");
+const { Favorite, Showcase, Project, Appointment } = require("../models");
 const errorHandler = require("../helpers/error-handler");
+const project = require("./project");
+const appointment = require("./appointment");
 
 module.exports = {
   getAllFavoriteByUserId: async (req, res) => {
@@ -18,6 +20,16 @@ module.exports = {
             {
               model: Gallery,
               as: "gallery",
+            },
+            {
+              mod: Project,
+              as: "project",
+              include: [
+                {
+                  model: Appointment,
+                  as: "appointment",
+                },
+              ],
             },
           ],
           attributes: {
