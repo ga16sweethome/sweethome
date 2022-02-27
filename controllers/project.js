@@ -38,9 +38,7 @@ module.exports = {
               {
                 model: ProjectType,
                 as: "projectType",
-                attributes: {
-                  exclude: ["id", "createdAt", "updatedAt"],
-                },
+                attributes: ["name"],
               },
               {
                 model: Section,
@@ -54,21 +52,14 @@ module.exports = {
           {
             model: Appointment,
             as: "appointment",
-            attributes: {
-              exclude: [
-                "id",
-                "createdAt",
-                "updatedAt",
-                "note",
-                "",
-                "budget",
-                "serviceTypeId",
-                "estimateTime",
-                "completedAt",
-                "timeslotId",
-                "buildingTypeId",
-              ],
-            },
+            attributes: [
+              "code",
+              "userId",
+              "address",
+              "appointmentDate",
+              "status",
+              "areaSize",
+            ],
             include: [
               {
                 model: BuildingType,
@@ -132,7 +123,7 @@ module.exports = {
         uploadReceipt: Joi.string().required(),
         noteUploadReceipt: Joi.string().required(),
       });
-      console.log(body);
+
       const { error } = schema.validate({
         ...body,
         uploadReceipt: file.path,
@@ -149,12 +140,21 @@ module.exports = {
           ...body,
           uploadReceipt: file.path,
         },
-        { where: { id, userId } }
+        {
+          where: {
+            id,
+            userId,
+            status: {
+              [Op.not]: [-1, 3],
+            },
+          },
+        }
       );
-      if (!update) {
+
+      if (!update[0]) {
         return res.status(400).json({
-          status: "Failed",
-          message: "Failed To Upload Receipt",
+          status: "Bad Request",
+          message: "Request Denied, project already done or cancelled",
         });
       }
       const cari = await Project.findOne({
@@ -203,7 +203,7 @@ module.exports = {
             id,
             userId,
             status: {
-              [Op.not]: 3,
+              [Op.not]: [-1, 2, 3],
             },
           },
         }
@@ -212,7 +212,7 @@ module.exports = {
       if (update[0] === 0) {
         return res.status(400).json({
           status: "Failed",
-          message: "Request Cancel Failed",
+          message: "Request Cancel Failed, project already confirm",
         });
       }
       res.status(200).json({

@@ -198,19 +198,7 @@ test("UPDATE PROFILE /api/v1/user/profile", async () => {
     });
 });
 
-//test update Profile failed no image
-test("UPDATE PROFILE /api/v1/user/profile", async () => {
-  await supertest(app)
-    .post("/api/v1/user/profile")
-    .set("Authorization", token1)
-    .expect(400)
-    .then((res) => {
-      expect(res.body.status).toBe("Bad Request");
-      expect(res.body.message).toBe("Please Insert an Image file");
-    });
-});
-
-//test update Profile badrequest
+//test update Profile bad request
 test("UPDATE PROFILE /api/v1/user/profile", async () => {
   await supertest(app)
     .post("/api/v1/user/profile")
@@ -224,14 +212,26 @@ test("UPDATE PROFILE /api/v1/user/profile", async () => {
     });
 });
 
-//test getpicture success with query
+//test getpicture 404 no data found with query
 test("GETPICTURE /api/v1/showcase/home/pic", async () => {
   await supertest(app)
     .get("/api/v1/showcase/home/pic")
     .query({ section: "Kitchen" })
+    .expect(404)
+    .then((res) => {
+      expect(res.body.status).toBe("Not Found");
+      expect(res.body.message).toBeTruthy();
+    });
+});
+
+//test getpicture success with query
+test("GETPICTURE /api/v1/showcase/home/pic", async () => {
+  await supertest(app)
+    .get("/api/v1/showcase/home/pic")
+    .query({ section: "Bathroom" })
     .expect(200)
     .then((res) => {
-      expect(res.body.status).toBe("Success");
+      expect(res.body.status).toBeTruthy();
       expect(res.body.message).toBeTruthy();
     });
 });

@@ -167,10 +167,6 @@ module.exports = {
     const id = req.user.id;
     try {
       if (!req.file) {
-        return res.status(400).json({
-          status: "Bad Request",
-          message: "Please Insert an Image file",
-        });
       }
       // schema mengisi validasi object sbb
 
@@ -178,13 +174,15 @@ module.exports = {
         phone: Joi.string(),
         firstName: Joi.string(),
         lastName: Joi.string(),
-        picture: Joi.string(),
         email: Joi.string().email(),
+        picture: Joi.string(),
       });
+      if (req.file) {
+        body.picture = file.path;
+      }
 
       const { error } = schema.validate({
         ...body,
-        picture: file.path,
       });
       if (error) {
         return res.status(400).json({
@@ -196,7 +194,6 @@ module.exports = {
       const update = await User.update(
         {
           ...body,
-          picture: file.path,
         },
         { where: { id } }
       );
@@ -258,6 +255,12 @@ module.exports = {
           },
         ],
       });
+
+      if (data.length == 0) {
+        return res
+          .status(404)
+          .json({ status: "Not Found", message: "No Data Found" });
+      }
       let x = Math.floor(Math.random() * data.length);
 
       res.status(200).json({
