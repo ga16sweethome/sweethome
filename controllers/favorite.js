@@ -28,7 +28,7 @@ module.exports = {
               as: "gallery",
             },
             {
-              mod: Project,
+              model: Project,
               as: "project",
               include: [
                 {
