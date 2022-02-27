@@ -27,9 +27,7 @@ module.exports = {
           id: data.id,
           is_admin: false,
         },
-        attributes: {
-          exclude: ["id", "createdAt", "updatedAt", "is_admin", "password"],
-        },
+        attributes: ["firstName", "lastName", "phone", "email", "picture"],
       });
 
       res.status(200).json({
@@ -237,40 +235,23 @@ module.exports = {
         where: {
           is_shown: true,
         },
-        attributes: {
-          exclude: [
-            ,
-            "updatedAt",
-            "showcaseId",
-            "projectId",
-            "createdBy",
-            "showcaseTypeId",
-            "is_shown",
-            "createdAt",
-          ],
-        },
+        attributes: ["id", "name"],
         include: [
           {
             model: Gallery,
             as: "gallery",
-            attributes: {
-              exclude: ["createdAt", "updatedAt", "showcaseId"],
-            },
+            attributes: ["title", "picture"],
           },
           {
             model: ShowcaseJunkSection,
             required: true,
             as: "showcaseJunkSection",
-            attributes: {
-              exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
-            },
+            attributes: ["sectionId"],
             include: [
               {
                 model: Section,
                 as: "section",
-                attributes: {
-                  exclude: ["createdAt", "updatedAt", "id"],
-                },
+                attributes: ["name"],
                 where: isiSection,
               },
             ],
@@ -278,12 +259,8 @@ module.exports = {
         ],
       });
       let x = Math.floor(Math.random() * data.length);
-
-      res.status(200).json({
-        status: "Success",
-        message: "Successfully retireve the data",
-        result: data[x],
-      });
+      console.log(x);
+      res.status(200).json(data[x]);
     } catch (error) {
       errorHandler(res, error);
     }
