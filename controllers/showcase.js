@@ -133,7 +133,7 @@ module.exports = {
       res.status(200).json({
         status: "Success",
         message: "Successfully retrieve the data",
-        result: data,
+        data: data,
       });
     } catch (error) {
       errorHandler(res, error);
