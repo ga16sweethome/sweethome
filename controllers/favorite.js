@@ -14,6 +14,12 @@ module.exports = {
         include: {
           model: Showcase,
           as: "showcase",
+          include: [
+            {
+              model: Gallery,
+              as: "gallery",
+            },
+          ],
           attributes: {
             exclude: [
               "id",
