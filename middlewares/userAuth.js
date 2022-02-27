@@ -5,8 +5,7 @@ const errorHandler = require('../helpers/error-handler')
 module.exports = {
     isLogin: async (req, res, next) => {
         try {
-            let token = req.header("Authorization")
-
+            const token = req.header("Authorization")
             if (!token) {
                 return res.status(401).json({
                     message: "No token detected",
@@ -14,8 +13,8 @@ module.exports = {
                     result: {}
                 })
             }
-
             token = token.replace("Bearer ", "")
+
             const decoded = verifyToken(token, process.env.JWT_KEY)
 
             if (!decoded) {

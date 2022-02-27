@@ -8,5 +8,12 @@ module.exports = {
     comparePassword : (password, hash) => {
         const compare = bcrypt.compareSync(password, hash)
         return compare
-    }
+    },
+    validatePassword: (password) => {
+        var check = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+        if (check.test(password) == false) {
+          return false;
+        }
+        return true;
+      },
 }

@@ -12,7 +12,7 @@ passport.deserializeUser((user, done)=>{
 passport.use(new GoogleStrategy({
     clientID: "155031898561-jovck60ogljfk0venctel4bndt3pov7p.apps.googleusercontent.com",
     clientSecret: "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",
-    callbackURL: "https://sweethome-app-api.herokuapp.com/api/v1/user/google/callback"
+    callbackURL: "https://sweethome-app-api.herokuapp.com"
   },
   function(accessToken, refreshToken, profile, cb) {
     // User.findOrCreate({ googleId: profile.id }, function (err, user) {
