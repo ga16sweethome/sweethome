@@ -15,6 +15,7 @@ module.exports = {
       },
     });
 
+
     // send mail with defined transport object
     let info = await transporter.sendMail({
       from: '"Sweethome Design" <no-reply@sweethome.com>', // sender address
