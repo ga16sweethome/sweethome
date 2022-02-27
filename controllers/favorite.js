@@ -1,4 +1,10 @@
-const { Favorite, Showcase, Project, Appointment } = require("../models");
+const {
+  Favorite,
+  Showcase,
+  Project,
+  Appointment,
+  Gallery,
+} = require("../models");
 const errorHandler = require("../helpers/error-handler");
 const project = require("./project");
 const appointment = require("./appointment");
