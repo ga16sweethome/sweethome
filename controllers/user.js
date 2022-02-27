@@ -26,9 +26,7 @@ module.exports = {
         where: {
           id: data.id,
         },
-        attributes: {
-          exclude: ["id", "createdAt", "updatedAt", "is_admin", "password"],
-        },
+        attributes: ["firstName", "lastName", "phone", "email", "picture"],
       });
 
       res.status(200).json(find);
@@ -230,40 +228,23 @@ module.exports = {
         where: {
           is_shown: true,
         },
-        attributes: {
-          exclude: [
-            ,
-            "updatedAt",
-            "showcaseId",
-            "projectId",
-            "createdBy",
-            "showcaseTypeId",
-            "is_shown",
-            "createdAt",
-          ],
-        },
+        attributes: ["id", "name"],
         include: [
           {
             model: Gallery,
             as: "gallery",
-            attributes: {
-              exclude: ["createdAt", "updatedAt", "showcaseId"],
-            },
+            attributes: ["title", "picture"],
           },
           {
             model: ShowcaseJunkSection,
             required: true,
             as: "showcaseJunkSection",
-            attributes: {
-              exclude: ["createdAt", "updatedAt", "id", "showcaseId"],
-            },
+            attributes: ["sectionId"],
             include: [
               {
                 model: Section,
                 as: "section",
-                attributes: {
-                  exclude: ["createdAt", "updatedAt", "id"],
-                },
+                attributes: ["name"],
                 where: isiSection,
               },
             ],
@@ -273,8 +254,6 @@ module.exports = {
       let x = Math.floor(Math.random() * data.length);
       console.log(x);
       res.status(200).json(data[x]);
-      // console.log(data.length);
-      // res.status(200).json(data);
     } catch (error) {
       errorHandler(res, error);
     }
@@ -289,7 +268,7 @@ module.exports = {
           message: "Invalid email , user not found",
           result: [],
         });
-     
+
       const passwordReset = await PasswordReset.create({
         email,
         validationCode: random.generate(50),
