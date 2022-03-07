@@ -19,7 +19,7 @@ module.exports = {
       let data = await Project.findAll({
         where: { userId: req.user.id },
         attributes: {
-          exclude: ["id", "createdAt", "updatedAt"],
+          exclude: ["createdAt", "updatedAt"],
         },
         include: [
           {
