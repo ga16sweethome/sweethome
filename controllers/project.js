@@ -138,6 +138,7 @@ module.exports = {
       const update = await Project.update(
         {
           ...body,
+          status: 2,
           uploadReceipt: file.path,
         },
         {
