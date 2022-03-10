@@ -64,20 +64,31 @@ module.exports = {
     const { showcaseId } = req.params;
     const userId = req.user.id;
     try {
-      const findfavorite = await Favorite.findAll({
+      const findfavorite = await Favorite.findOne({
         where: {
           showcaseId,
           userId,
         },
       });
-      if (!findfavorite.length == 0) {
-        return res.status(400).json({
-          status: "Bad Request",
-          message: "Already include fovurites",
+
+      if (!findfavorite) {
+        await Favorite.create({ userId, showcaseId });
+      }
+
+      if (findfavorite) {
+        await Favorite.destroy({
+          where: { id: findfavorite.id },
         });
       }
-      const favorite = await Favorite.create({ userId, showcaseId });
-      res.status(200).json({ favorite });
+
+      const result = await Favorite.findOne({
+        where: {
+          showcaseId,
+          userId,
+        },
+      });
+      
+      res.status(200).json(result);
     } catch (error) {
       errorHandler(res, error);
     }
