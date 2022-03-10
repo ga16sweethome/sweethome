@@ -113,19 +113,15 @@ module.exports = {
         });
       }
       // check favorite jika ada req.user from token
-      if (req.user) {
-        const checkfavorite = await Favorite.findAll({
+      const checkfavorite = await Favorite.findOne({
           where: {
             userId: req.user.id,
             showcaseId: id,
           },
         });
         // validasi apakah checkfavorite ada isi atau tidak
-        if (checkfavorite.length == 0) {
-          data.push({ IsFavorite: false });
-        } else {
-          data.push({ IsFavorite: true });
-        }
+      if (checkfavorite) {
+        data.push({ IsFavorite: true });
       } else {
         data.push({ IsFavorite: false });
       }
