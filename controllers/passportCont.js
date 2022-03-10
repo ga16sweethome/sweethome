@@ -24,9 +24,7 @@ module.exports = {
         id: profile.id,
         email: profile.email,
       });
-      res.redirect(
-        "https://thesweethome.netlify.app/authenticate?token=" + token
-      ); // untuk success redirect
+      res.redirect(process.env.FE_WEB + "/authenticate?token=" + token); // untuk success redirect
     } catch (error) {
       errorHandler(res, error);
     }
@@ -51,9 +49,7 @@ module.exports = {
         id: profile.id,
         email: profile.email,
       });
-      res.redirect(
-        "https://thesweethome.netlify.app/authenticate?token=" + token
-      );
+      res.redirect(process.env.FE_WEB + "/authenticate?token=" + token);
     } catch (error) {
       errorHandler(res, error);
     }

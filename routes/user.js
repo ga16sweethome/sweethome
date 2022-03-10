@@ -31,7 +31,7 @@ router.get(
 router.get(
   "/facebook/callback",
   passport.authenticate("facebook", {
-    failureRedirect: "https://thesweethome.netlify.app/login",
+    failureRedirect: process.env.FE_WEB + "/login",
   }),
   facebookCallback
 );
@@ -43,7 +43,7 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "https://thesweethome.netlify.app/login", //rediredct ke fe
+    failureRedirect: process.env.FE_WEB + "/login", //rediredct ke fe
   }),
   googleCallback
 );
