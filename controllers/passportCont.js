@@ -24,7 +24,8 @@ module.exports = {
         id: profile.id,
         email: profile.email,
       });
-      res.redirect(process.env.FE_WEB + "/authenticate?token=" + token); // untuk success redirect
+      //res.redirect(process.env.FE_WEB + "/authenticate?token=" + token); // untuk success redirect
+      res.redirect(process.env.FE_WEB + "/authenticate?token=" + token).json({token})
     } catch (error) {
       errorHandler(res, error);
     }
